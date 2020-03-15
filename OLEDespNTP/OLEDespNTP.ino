@@ -20,8 +20,20 @@ int pm=0;
 // in seconds
 // 
 int zone = 5;
-           int ZoneOffset[8] = {0,-36000,-18000,-14400,3600,10800,28800,39600};
- const char* ZoneLocation[8] = {"","Hawaii","EasterIs","Delaware","Spain","Uganda","Philippines","Sydney"};
+struct zone {
+	int offset;
+	char *location;
+}
+
+const struct zone zones[8] = {
+	{0, ""}, 
+	{-36000, "Hawaii"},
+	{-18000, "EasterIs"},
+	{-14400, "Delaware"},
+	{3600, "Spain"},
+	{10800, "Uganda"},
+	{28800, "Philippines"},
+	{39600, "Sydney"}};
 
 /*
 Easter Island GMT-5 -18000
@@ -30,14 +42,6 @@ Hawaii GMT-10 -36000
 Delaware GMT -4 -14400 sum
 Delaware GMT -5 -18000 win
 */
-
-
- 
- 
- //int ZoneOffset[2] = {10800};
- //const char* ZoneLocation[2]= {"Uganda"};
-//int ZoneOffset[2] = 10800; int ZoneLocation[2]= "Uganda";
-
 
 int Interval = 15000;// in milseconds
 
@@ -179,7 +183,7 @@ void setup() {
  */
 
  
- unsigned long epoch = secsSince1900 - seventyYears + ZoneOffset[zone];
+ unsigned long epoch = secsSince1900 - seventyYears + zones[zone].offset;
 
  
 
@@ -286,7 +290,7 @@ void DisplayTime(){
 
 
 
-  display.println(ZoneLocation[zone]);
+  display.println(zones[zone].location);
   
   display.setTextSize(2);
   display.setCursor(0,15);
