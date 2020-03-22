@@ -1,9 +1,10 @@
 
 /* code
  *  OLEDespNTPzones
- *  Thu 11/8/2018 7:16 PM
- *  set baud to 57600
- *    
+ *  
+ *  Update: 2018-11-08 7:16 PM Thurs
+ *  Update: 2020-03-21 9:30 PM Sat
+ *  
  *  
  *  modified by: Brian Taylor
  *  added OLED
@@ -11,6 +12,8 @@
  *  clock count by tenths of sec
  *  network updates only during 
  *  startup and every 30 minutes thereafter
+ *  
+ *  set baud to 115200
  *  
  */
 // #define pin D4 // red
