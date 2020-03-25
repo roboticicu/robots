@@ -22,23 +22,25 @@ int pm=0;
         
 // in seconds
 // 
-int zone = 5;
+int zone = 4;/* <=== Change this number to choose time zone. ====== */
 struct zone {
   int offset;
   char *location;
 };
 
-const struct zone zones[10] = {
+const struct zone zones[12] = {
   {0, ""}, 
-  {-36000,"HAWAII"},      /*=== 1 === */
-  {-18000,"Eastr Island"},/*=== 2 === */
-  {-14400,"Delaware"},    /*=== 3 === */
-  {3600,  "Spain"},       /*=== 4 === */
-  {10800, "Uganda"},      /*=== 5 === */
-  {19800, "India"},       /*=== 6 === */
-  {28800, "Philippines"}, /*=== 7 === */
-  {32400, "Japan"},       /*=== 8 === */
-  {39600, "Sydney"}};     /*=== 9 === */
+  {-36000,"HAWAII"},       /*=== 1 === */
+  {-18000,"Easter Island"},/*=== 2 === */
+  {-14400,"Delaware"},     /*=== 3 === */
+  {-10800, "Brazil"},      /*=== 4 === */
+  {0000,  "Gambia"},       /*=== 5 === */
+  {3600,  "Spain"},        /*=== 6 === */
+  {10800, "Uganda"},       /*=== 7 === */
+  {19800, "India"},        /*=== 8 === */
+  {28800, "Philippines"},  /*=== 9 === */
+  {32400, "Japan"},        /*=== 10 === */
+  {39600, "Sydney"}};      /*=== 11 === */
 
 /*
   {10800, "Uganda"},
@@ -48,14 +50,16 @@ Hawaii GMT-10 -36000
 Delaware GMT -4 -14400 sum
 Delaware GMT -5 -18000 win
 */
+//  oled_32();
+int Interval = 29000;// in milseconds
+int rotation=0; // display upright horizontal
 
-int Interval = 15000;// in milseconds
 
-int rotation=0; // display upright horizontal 
 /* ====== OLED Setup ====== */
 #include <SPI.h>
 #include <Wire.h>
-#include <Adafruit_SSD1306.h>
+  #include <Adafruit_SSD1306.h>
+//  #include <Adafruit_SSD1306_64.h>
 #include <Adafruit_GFX.h>
 
 // OLED display TWI address
@@ -63,22 +67,26 @@ int rotation=0; // display upright horizontal
 Adafruit_SSD1306 display(-1);
 
 #if (SSD1306_LCDHEIGHT != 32)
-#error("Height incorrect, please fix Adafruit_SSD1306.h!");
+//#error("Height incorrect, please fix Adafruit_SSD1306.h!");
 #endif
 /* ====== OLED Setup ====== */
 
 
-/******************** - www.geekstips.com - Arduino Time Sync from NTP Server using ESP8266 WiFi module - Arduino code example ********************/
+
+/******************** 
+- www.geekstips.com - Arduino Time Sync from NTP Server 
+using ESP8266 WiFi module - Arduino code example
+********************/
 
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
 
-char ssid[] = "xxxxxxxxx";
-// your network SSID (name)
-char pass[] = "xxxxxxxxx";
-// your network password
-
+#include <Logins.h>
+/* ====
+char ssid[] = "xxxxxxxxxx";// your network SSID (name)
+char pass[] = "xxxxxxxxxx";// your network password
+==== */
 
 unsigned int localPort = 2390;
 // local port to listen for UDP packets
@@ -107,7 +115,7 @@ void setup() {
   display.setRotation(rotation);// h 0,2  v 1,3
 
   // display a line of text
-  display.setTextColor(WHITE);
+  display.setTextColor(WHITE,BLACK);
   display.setTextSize(1);
   display.setCursor(0,0);
   display.println("NTPTime:");
@@ -217,16 +225,29 @@ void loop() {
 
   DisplayTime();
 
-  Serial.print((epoch % 86400L) / 3600);
-  if(((epoch % 86400L) / 3600)<10) {
-    display.print('0');
+  if(((epoch % 86400L) / 3600)<1) {
+    Serial.print('..0');
+    Serial.print((epoch % 86400L) / 3600);
+    display.print('..0');// hours
   }
-  if(((epoch % 86400L) / 3600)>13) {
-    display.print('0');
+  if(((epoch % 86400L) / 3600)<10) {
+    Serial.print('0');
+    Serial.print((epoch % 86400L) / 3600);
+    display.print('0');// hours
+  }
+  if(    (((epoch % 86400L) / 3600)>13)&&((((epoch % 86400L) / 3600)-12)<10)   ) {
+    Serial.print('.0');
+    Serial.print(((epoch % 86400L) / 3600)-12);
+    display.print('.0');// hours
     display.print(((epoch % 86400L) / 3600)-12);
     pm=1;
+  } else if((((epoch % 86400L) / 3600)-12)<1) {
+    Serial.print("0");
+    display.print("0");
+    display.print(((epoch % 86400L) / 3600)-12);  
   } else if((((epoch % 86400L) / 3600)-12)<10) {
-    display.print(".");
+    Serial.print("0");
+    display.print("0");
     display.print(((epoch % 86400L) / 3600)-12);  
   } else {
     display.print((epoch % 86400L) / 3600);
@@ -238,7 +259,7 @@ void loop() {
   if ( ((epoch % 3600) / 60) < 10 ) {
     // In the first 10 minutes of each hour, we'll want a leading '0'
     Serial.print('0');
-    display.print('0');
+    display.print('0');// minutes
   }
   Serial.print((epoch % 3600) / 60);
   display.print((epoch % 3600) / 60);
@@ -248,12 +269,13 @@ void loop() {
   if ( (epoch % 60) < 10 ) {
     // In the first 10 seconds of each minute, we'll want a leading '0'
     Serial.print('0');
-    display.print('0');
+    display.print('0');// seconds
   }
-  Serial.println(epoch % 60);
+  Serial.print(epoch % 60);
   display.print(epoch % 60);
   if (pm) {
     display.println("p");
+    Serial.println('p');
   }
   // print the second
   display.display();
@@ -263,6 +285,7 @@ void loop() {
 
 // send an NTP request to the time server at the given address
 unsigned long sendNTPpacket(IPAddress& address) {
+  Serial.println("\n===================================");
   Serial.println("sending NTP packet...");
   // set all bytes in the buffer to 0
   memset(packetBuffer, 0, NTP_PACKET_SIZE);
@@ -290,14 +313,16 @@ unsigned long sendNTPpacket(IPAddress& address) {
 }
 
 void DisplayTime(){
-  display.fillRect(0, display.height()-22, 127, 22, BLACK);// BLACK WHITE
-  display.setTextColor(WHITE);
+  //display.fillRect(0, 10, 127, 50, BLACK);// BLACK WHITE
+  //display.fillRect(0, display.height()-22, 127, 50, BLACK);// BLACK WHITE
+  display.setTextColor(WHITE,BLACK);
   display.setTextSize(1);
   display.setCursor(50,0);
+  //display.setCursor(20,45);
+  display.println(zones[zone].location);
   //if(ZoneOffset[zone] == -14400){display.println(ZoneLocation[zone]);}
   //if(ZoneOffset[zone] == 10800){display.println("Uganda");}
   
-  display.println(zones[zone].location);
   display.setTextSize(2);
   display.setCursor(0,15);
   // display.display();
