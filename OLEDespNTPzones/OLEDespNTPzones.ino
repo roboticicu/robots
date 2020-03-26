@@ -165,15 +165,27 @@ void setup() {
   Serial.println(udp.localPort());
 }
 
+/* get_hour -- Given an epoch return the corresponding hour of the day.
+ * @epoch: Epoch that represents the time
+ * @pm: Used if 12 hour clock is defined. 0 for AM, 1 for PM [in/out]
+ * returns: hour
+ * 
+ * Given an epoch, returns the corresponding hour. If the time format is
+ * in 12 hour format, the out parameter pm is set to 0 for AM and 1 for PM.
+ * For 24 hour format hour is respresent as 0..12 and pm is left blank.
+ *
+ * The variable pm is a pointer to a memory address of an integer. To find
+ * the value that it points to you must derefeence it by using the * symbol.
+ */
 int get_hour(unsigned long epoch, int *pm) { 
   int  hour = (epoch % 86400L) / 3600;
-  *pm = 0
   // Check to see if we want 24 hour clock, if so just return hour
   if (tmd != 12) {
     return hour;
   }
   /* Assumes AM/PM not 24 hour clock */ 
   if (hour > 11) {
+    /* derefence the pm address location and store the value in memory */
     *pm=1;
     hour-=12;
   }
@@ -183,9 +195,8 @@ int get_hour(unsigned long epoch, int *pm) {
 }
 
 void loop() {
-  //int pm=0;
   int cb;
-  int pm;
+  int pm = 0;
   char hour[3];
   unsigned long highWord;
   unsigned long lowWord;
@@ -246,6 +257,10 @@ void loop() {
   // UTC is the time at Greenwich Meridian (GMT)
 
   DisplayTime();
+  /* Display the hour, since get_hour wants a pointer to memory and we have
+   * an instance of an integer (pm), just pass it the address of the instance
+   * using the & symbol.
+   */
   sprintf(hour, "%02d", get_hour(epoch, &pm));
   
   Serial.print(hour);
