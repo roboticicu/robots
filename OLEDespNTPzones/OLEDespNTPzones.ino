@@ -1,6 +1,6 @@
 
 /* code
- *  OLEDespNTPzones
+ *  OLEDespNTPzonesDK
  *  
  *  Update: 2018-11-08 7:16 PM Thurs
  *  Update: 2020-03-21 9:30 PM Sat
@@ -19,7 +19,10 @@
 // #define pin D4 // red
 //    pinMode(pin, INPUT_PULLUP);
 int pm=0;
-        
+int tmd = 12;// 12 24 hour
+
+
+
 // in seconds
 // 
 int zone = 4;/* <=== Change this number to choose time zone. ====== */
@@ -28,19 +31,20 @@ struct zone {
   char *location;
 };
 
-const struct zone zones[12] = {
+const struct zone zones[13] = {
   {0, ""}, 
   {-36000,"HAWAII"},       /*=== 1 === */
-  {-18000,"Easter Island"},/*=== 2 === */
-  {-14400,"Delaware"},     /*=== 3 === */
-  {-10800, "Brazil"},      /*=== 4 === */
-  {0000,  "Gambia"},       /*=== 5 === */
-  {3600,  "Spain"},        /*=== 6 === */
-  {10800, "Uganda"},       /*=== 7 === */
-  {19800, "India"},        /*=== 8 === */
-  {28800, "Philippines"},  /*=== 9 === */
-  {32400, "Japan"},        /*=== 10 === */
-  {39600, "Sydney"}};      /*=== 11 === */
+  {-21600,"Early Island"}, /*=== 2 === */
+  {-18000,"Easter Island"},/*=== 3 === */
+  {-14400,"Delaware"},     /*=== 4 === */
+  {-10800,"Brazil"},       /*=== 5 === */
+  {0000,  "Gambia"},       /*=== 6 === */
+  {3600,  "Spain"},        /*=== 7 === */
+  {10800, "Uganda"},       /*=== 8 === */
+  {19800, "India"},        /*=== 9 === */
+  {28800, "Philippines"},  /*=== 10 === */
+  {32400, "Japan"},        /*=== 11 === */
+  {39600, "Sydney"}};      /*=== 12 === */
 
 /*
   {10800, "Uganda"},
@@ -162,9 +166,24 @@ void setup() {
   Serial.println(udp.localPort());
 }
 
+int get_hour_am_pm(unsigned long epoch) { 
+int  hour = (epoch % 86400L) / 3600;
+  /* Assumes AM/PM not 24 hour clock */ 
+  if (hour > 11) {
+    pm=1;
+    hour-=12;
+  }
+  if (hour == 0)
+    hour = 12;
+  //return (hour , pm);
+  //
+  return hour;
+}
+
 void loop() {
-  int pm=0;
+  //int pm=0;
   int cb;
+  char hour[3];
   unsigned long highWord;
   unsigned long lowWord;
   unsigned long secsSince1900;
@@ -224,21 +243,36 @@ void loop() {
   // UTC is the time at Greenwich Meridian (GMT)
 
   DisplayTime();
+  sprintf(hour, "%02d", get_hour_am_pm(epoch));
+  // 
+  Serial.print(hour);
 
+
+  /*
+  Serial.println("..");
   if(((epoch % 86400L) / 3600)<1) {
-    Serial.print('..0');
+    Serial.print("..0");
     Serial.print((epoch % 86400L) / 3600);
-    display.print('..0');// hours
+    display.print("..0");// hours
   }
+
+
+
+
+
+
+
+
+
   if(((epoch % 86400L) / 3600)<10) {
-    Serial.print('0');
+    Serial.print("0");
     Serial.print((epoch % 86400L) / 3600);
-    display.print('0');// hours
+    display.print("0");// hours
   }
   if(    (((epoch % 86400L) / 3600)>13)&&((((epoch % 86400L) / 3600)-12)<10)   ) {
-    Serial.print('.0');
+    Serial.print(".0");
     Serial.print(((epoch % 86400L) / 3600)-12);
-    display.print('.0');// hours
+    display.print(".0");// hours
     display.print(((epoch % 86400L) / 3600)-12);
     pm=1;
   } else if((((epoch % 86400L) / 3600)-12)<1) {
@@ -253,29 +287,34 @@ void loop() {
     display.print((epoch % 86400L) / 3600);
     pm=0;
   }
+  
+*/
+  
+  display.print(hour);
   // print the hour (86400 equals secs per day)
-  Serial.print(':');
-  display.print(':');
+  Serial.print(":");
+  display.print(":");
   if ( ((epoch % 3600) / 60) < 10 ) {
     // In the first 10 minutes of each hour, we'll want a leading '0'
-    Serial.print('0');
-    display.print('0');// minutes
+    Serial.print("0");
+    display.print("0");// minutes
   }
   Serial.print((epoch % 3600) / 60);
   display.print((epoch % 3600) / 60);
   // print the minute (3600 equals secs per minute)
-  Serial.print(':');
-  display.print(':');
+  Serial.print(":");
+  display.print(":");
   if ( (epoch % 60) < 10 ) {
-    // In the first 10 seconds of each minute, we'll want a leading '0'
-    Serial.print('0');
-    display.print('0');// seconds
+    // In the first 10 seconds of each minute, we"ll want a leading "0"
+    Serial.print("0");
+    display.print("0");// seconds
   }
   Serial.print(epoch % 60);
   display.print(epoch % 60);
+   // display.println(pm);
   if (pm) {
     display.println("p");
-    Serial.println('p');
+    Serial.println("p");
   }
   // print the second
   display.display();
