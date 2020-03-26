@@ -18,7 +18,6 @@
  */
 // #define pin D4 // red
 //    pinMode(pin, INPUT_PULLUP);
-int pm=0;
 int tmd = 12;// 12 24 hour
 
 
@@ -166,23 +165,27 @@ void setup() {
   Serial.println(udp.localPort());
 }
 
-int get_hour_am_pm(unsigned long epoch) { 
-int  hour = (epoch % 86400L) / 3600;
+int get_hour(unsigned long epoch, int *pm) { 
+  int  hour = (epoch % 86400L) / 3600;
+  *pm = 0
+  // Check to see if we want 24 hour clock, if so just return hour
+  if (tmd != 12) {
+    return hour;
+  }
   /* Assumes AM/PM not 24 hour clock */ 
   if (hour > 11) {
-    pm=1;
+    *pm=1;
     hour-=12;
   }
   if (hour == 0)
     hour = 12;
-  //return (hour , pm);
-  //
   return hour;
 }
 
 void loop() {
   //int pm=0;
   int cb;
+  int pm;
   char hour[3];
   unsigned long highWord;
   unsigned long lowWord;
@@ -243,53 +246,9 @@ void loop() {
   // UTC is the time at Greenwich Meridian (GMT)
 
   DisplayTime();
-  sprintf(hour, "%02d", get_hour_am_pm(epoch));
-  // 
+  sprintf(hour, "%02d", get_hour(epoch, &pm));
+  
   Serial.print(hour);
-
-
-  /*
-  Serial.println("..");
-  if(((epoch % 86400L) / 3600)<1) {
-    Serial.print("..0");
-    Serial.print((epoch % 86400L) / 3600);
-    display.print("..0");// hours
-  }
-
-
-
-
-
-
-
-
-
-  if(((epoch % 86400L) / 3600)<10) {
-    Serial.print("0");
-    Serial.print((epoch % 86400L) / 3600);
-    display.print("0");// hours
-  }
-  if(    (((epoch % 86400L) / 3600)>13)&&((((epoch % 86400L) / 3600)-12)<10)   ) {
-    Serial.print(".0");
-    Serial.print(((epoch % 86400L) / 3600)-12);
-    display.print(".0");// hours
-    display.print(((epoch % 86400L) / 3600)-12);
-    pm=1;
-  } else if((((epoch % 86400L) / 3600)-12)<1) {
-    Serial.print("0");
-    display.print("0");
-    display.print(((epoch % 86400L) / 3600)-12);  
-  } else if((((epoch % 86400L) / 3600)-12)<10) {
-    Serial.print("0");
-    display.print("0");
-    display.print(((epoch % 86400L) / 3600)-12);  
-  } else {
-    display.print((epoch % 86400L) / 3600);
-    pm=0;
-  }
-  
-*/
-  
   display.print(hour);
   // print the hour (86400 equals secs per day)
   Serial.print(":");
