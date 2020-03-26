@@ -313,8 +313,11 @@ void loop() {
   display.print(epoch % 60);
    // display.println(pm);
   if (pm) {
-    display.println("p");
-    Serial.println("p");
+    display.print("p");
+    Serial.println("pm");
+  }else{
+    display.print(" ");
+    Serial.println("am");
   }
   // print the second
   display.display();
