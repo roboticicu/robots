@@ -12,6 +12,10 @@
  * I added code from this page..
  * arduinojson.org/v6/example/http-client/
  * 
+ * YouTube video weather sketch that uses json
+ * youtube.com/watch?v=3U-qbii1saw
+ * 
+ * 
  */
 
 #include <ESP8266WiFi.h>
