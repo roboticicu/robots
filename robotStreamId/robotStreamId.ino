@@ -1,3 +1,5 @@
+
+
 /*
  * robotStreamId
  * 
@@ -19,6 +21,11 @@
  */
 
 #include <ESP8266WiFi.h>
+#include <ArduinoJson.h>
+
+
+
+
 
 //const char* ssid     = "your-ssid";
 //const char* password = "your-password";
@@ -30,7 +37,7 @@ char pass[] = "xxxxxxxxxx";// your network password
 
 const char* host = "www.robotic.icu";
 const char* streamId   = "xxxxxxx";
-const char* DeviceID = "286531102";
+const char* DeviceID = "934661423";// 934661423 286531102
 
 int rotation=0; // display upright horizontal
 
@@ -52,7 +59,14 @@ Adafruit_SSD1306 display(-1);
 /* ====== OLED Setup ====== */
 
 
+
+int State = 1;
+int LED   = 2;
+
+
+
 void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
   /* ====== setup section OLED ====== */
   // initialize and clear display
   display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
@@ -65,8 +79,8 @@ void setup() {
   display.setCursor(0,0);
   display.print("DeviceID: ");
   display.println(DeviceID);
-  display.setTextSize(2);
-  display.setCursor(15,10);
+  //display.setTextSize(2);
+  //display.setCursor(15,10);
   //display.println(ssid);
   //display.println(password);
   display.display();
@@ -165,29 +179,18 @@ void loop() {
 https://www.youtube.com/watch?v=dQyXuFWylm4
 
 
-
-would not work
-    struct json_object *parsed_json;
-    struct json_object *name;
-    struct json_object *B1;
-    struct json_object *B2;
+    //for(int count=1;count <17; count++){
+    //Serial.println(count);
+    //}
 */
 
  
     //Serial.println("debug 1");
   // Read all the lines of the reply from server and print them to Serial
   while(client.available()){
-    //for(int count=1;count <17; count++){
     //Serial.print("debug ");
-    //Serial.println(count);
     String line = client.readStringUntil('\n');
-    //
-    Serial.println(line);
-       // couldn't get following lines to work..
-       // parsed_json = json_tokener_parse(line);
-       // json_object_object_get_ex(parsed_json, "name", &name);
-       // json_object_object_get_ex(parsed_json, "B1", &B1);
-    //}
+    //    Serial.println(line);
 
 
     const size_t capacity = JSON_OBJECT_SIZE(22) + 370;
@@ -195,7 +198,7 @@ DynamicJsonDocument doc(capacity);
 
 // const char* json = "{\"id\":\"658435603\",\"admin\":\"123456789\",\"user\":\"\",\"name\":\"Prof Ferber Farber\",\"description\":\"Robotics Debokler\",\"location\":\"Laboratory\",\"type\":\"\",\"controlpanel\":\"8nixi\",\"access\":\"\",\"online\":\"Online\",\"image\":\"GoFigure.jpg\",\"ip\":\"\",\"batLevel\":\"75\",\"B1\":\"\",\"B2\":\"\",\"B3\":\"\",\"B4\":\"\",\"B5\":\"\",\"B6\":\"\",\"B7\":\"\",\"B8\":\"\",\"message\":\"Hello mom!\"}";
 
-deserializeJson(doc, json);
+deserializeJson(doc, line);
 
 const char* id = doc["id"]; // "658435603"
 const char* admin = doc["admin"]; // "123456789"
@@ -210,28 +213,64 @@ const char* online = doc["online"]; // "Online"
 const char* image = doc["image"]; // "GoFigure.jpg"
 const char* ip = doc["ip"]; // ""
 const char* batLevel = doc["batLevel"]; // "75"
-const char* B1 = doc["B1"]; // ""
-const char* B2 = doc["B2"]; // ""
-const char* B3 = doc["B3"]; // ""
-const char* B4 = doc["B4"]; // ""
-const char* B5 = doc["B5"]; // ""
-const char* B6 = doc["B6"]; // ""
-const char* B7 = doc["B7"]; // ""
-const char* B8 = doc["B8"]; // ""
+const char* P1 = doc["B1"]; // ""
+const char* P2 = doc["B2"]; // ""
+const char* P3 = doc["B3"]; // ""
+const char* P4 = doc["B4"]; // ""
+const char* P5 = doc["B5"]; // ""
+const char* P6 = doc["B6"]; // ""
+const char* P7 = doc["B7"]; // ""
+const char* P8 = doc["B8"]; // ""
 const char* message = doc["message"]; // "Hello mom!"
 
-display.print(name);
+
+//const char *Buttons = P1 + P2 + P3 + P4 + P5 + P6 + P7 + P8;// wouldnt work
+//if (Buttons != OldButtons){
+//
+displayStat();
+//}
 
 
+
+
+
+
+    if (P1 == "0"){ State = 0; } else  { State = 1; }
+  digitalWrite(LED, State);//    LED_BUILTIN
+
+//  Serial.print(CLS);
+Serial.print(P1);
+Serial.print(" ");
+Serial.print(P2);
+Serial.print(" ");
+Serial.print(P3);
+Serial.print(" ");
+Serial.print(P4);
+Serial.print(" ");
+Serial.print(P5);
+Serial.print(" ");
+Serial.print(P6);
+Serial.print(" ");
+Serial.print(P7);
+Serial.print(" ");
+Serial.println(P8);
 
     
   delay(10);
   }
- 
-    //String line = client.readStringUntil('{\r');
-    //Serial.println(line);
-    //Serial.println("debug 3");
- // Serial.println();
+
   //Serial.println("closing connection");
+}
+
+
+void displayStat() {
+
+  display.setTextColor(WHITE,BLACK);
+  display.setTextSize(2);
+  display.setCursor(0,20);
+  display.print("Msg:");
+//display.print(str(name) );
+display.display();
+ // const char* OldButtons = Buttons;
 }
 
