@@ -15,7 +15,7 @@
  * YouTube video weather sketch that uses json
  * youtube.com/watch?v=3U-qbii1saw
  * 
- * 
+ * arduinojson.org/v6/assistant/
  */
 
 #include <ESP8266WiFi.h>
@@ -188,6 +188,43 @@ would not work
        // json_object_object_get_ex(parsed_json, "name", &name);
        // json_object_object_get_ex(parsed_json, "B1", &B1);
     //}
+
+
+    const size_t capacity = JSON_OBJECT_SIZE(22) + 370;
+DynamicJsonDocument doc(capacity);
+
+// const char* json = "{\"id\":\"658435603\",\"admin\":\"123456789\",\"user\":\"\",\"name\":\"Prof Ferber Farber\",\"description\":\"Robotics Debokler\",\"location\":\"Laboratory\",\"type\":\"\",\"controlpanel\":\"8nixi\",\"access\":\"\",\"online\":\"Online\",\"image\":\"GoFigure.jpg\",\"ip\":\"\",\"batLevel\":\"75\",\"B1\":\"\",\"B2\":\"\",\"B3\":\"\",\"B4\":\"\",\"B5\":\"\",\"B6\":\"\",\"B7\":\"\",\"B8\":\"\",\"message\":\"Hello mom!\"}";
+
+deserializeJson(doc, json);
+
+const char* id = doc["id"]; // "658435603"
+const char* admin = doc["admin"]; // "123456789"
+const char* user = doc["user"]; // ""
+const char* name = doc["name"]; // "Prof Ferber Farber"
+const char* description = doc["description"]; // "Robotics Debokler"
+const char* location = doc["location"]; // "Laboratory"
+const char* type = doc["type"]; // ""
+const char* controlpanel = doc["controlpanel"]; // "8nixi"
+const char* access = doc["access"]; // ""
+const char* online = doc["online"]; // "Online"
+const char* image = doc["image"]; // "GoFigure.jpg"
+const char* ip = doc["ip"]; // ""
+const char* batLevel = doc["batLevel"]; // "75"
+const char* B1 = doc["B1"]; // ""
+const char* B2 = doc["B2"]; // ""
+const char* B3 = doc["B3"]; // ""
+const char* B4 = doc["B4"]; // ""
+const char* B5 = doc["B5"]; // ""
+const char* B6 = doc["B6"]; // ""
+const char* B7 = doc["B7"]; // ""
+const char* B8 = doc["B8"]; // ""
+const char* message = doc["message"]; // "Hello mom!"
+
+display.print(name);
+
+
+
+    
   delay(10);
   }
  
