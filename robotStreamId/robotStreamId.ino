@@ -20,16 +20,17 @@
  * arduinojson.org/v6/assistant/
  */
 
-#include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
-
-
-
-
-
-//const char* ssid     = "your-ssid";
-//const char* password = "your-password";
+#include <ESP8266WiFi.h>
 #include <Logins.h>
+
+//OLEDs
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_SSD1306.h>
+//  #include <Adafruit_SSD1306_64.h>
+#include <Adafruit_GFX.h>
+
 /* ==== Logins.h content below...store in libraries
 char ssid[] = "xxxxxxxxxx";// your network SSID (name)
 char pass[] = "xxxxxxxxxx";// your network password
@@ -39,29 +40,13 @@ const char* host = "www.robotic.icu";
 const char* streamId   = "xxxxxxx";
 const char* DeviceID = "934661423";// 934661423 286531102
 
-int rotation=0; // display upright horizontal
-
-
 /* ====== OLED Setup ====== */
-#include <SPI.h>
-#include <Wire.h>
-  #include <Adafruit_SSD1306.h>
-//  #include <Adafruit_SSD1306_64.h>
-#include <Adafruit_GFX.h>
-
 // OLED display TWI address
 #define OLED_ADDR    0x3C
 Adafruit_SSD1306 display(-1);
-
-#if (SSD1306_LCDHEIGHT != 32)
-//#error("Height incorrect, please fix Adafruit_SSD1306.h!");
-#endif
-/* ====== OLED Setup ====== */
-
-
-
 int State = 1;
 int LED   = 2;
+int rotation=0; // display upright horizontal
 
 
 
@@ -85,27 +70,14 @@ void setup() {
   //display.println(password);
   display.display();
   /* ====== setup section OLED ====== */
-
-
-
-
-
-
-
-
-
-
-  
   Serial.begin(115200);
   delay(10);
 
   // We start by connecting to a WiFi network
-
   Serial.println();
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
- 
   WiFi.begin(ssid, pass);
  
   while (WiFi.status() != WL_CONNECTED) {
@@ -119,15 +91,9 @@ void setup() {
   Serial.println(WiFi.localIP());
 }
 
-int value = 0;
-
 void loop() {
   delay(1000);
-  ++value;
 
-  //Serial.print("connecting to ");
-  //Serial.println(host);
- 
   // Use WiFiClient class to create TCP connections
   WiFiClient client;
   const int httpPort = 80;
@@ -137,33 +103,20 @@ void loop() {
   }
  
   // We now create a URI for the request
-  String url = "/robotid.php";
-  //url += streamId;
-  url += "?id=";
-  url += DeviceID;
-  //url += "&value=";
-  //url += value;
- 
-  //Serial.print("Requesting URL: ");
-  //Serial.println(url);
- 
+  String url = "/robotid.php?id=";
+  url += DeviceID; 
   // This will send the request to the server
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" + 
                "Connection: close\r\n\r\n");
   delay(1);
 
-
-
-
-
-/*================= Added this from 2nd site ================= */
+  /*================= Added this from 2nd site ================= */
   // Check HTTP status
   char status[32] = {0};
   client.readBytesUntil('\r', status, sizeof(status));
   if (strcmp(status, "HTTP/1.1 200 OK") != 0) {
-    Serial.print(F("Unexpected response: "));
-    //Serial.println(status);
+    Serial.print(F("Unexpected response: %s"), status);
     return;
   }
 
@@ -173,20 +126,9 @@ void loop() {
     Serial.println(F("Invalid response"));
     return;
   }
-/*================= Added this from 2nd site ================= */
 
-/*
-https://www.youtube.com/watch?v=dQyXuFWylm4
-
-
-    //for(int count=1;count <17; count++){
-    //Serial.println(count);
-    //}
-*/
-
- 
-    //Serial.println("debug 1");
   // Read all the lines of the reply from server and print them to Serial
+  // Each line should be its own JSON document. Process the document and then continue.
   while(client.available()){
     //Serial.print("debug ");
     String line = client.readStringUntil('\n');
@@ -194,83 +136,67 @@ https://www.youtube.com/watch?v=dQyXuFWylm4
 
 
     const size_t capacity = JSON_OBJECT_SIZE(22) + 370;
-DynamicJsonDocument doc(capacity);
-
-// const char* json = "{\"id\":\"658435603\",\"admin\":\"123456789\",\"user\":\"\",\"name\":\"Prof Ferber Farber\",\"description\":\"Robotics Debokler\",\"location\":\"Laboratory\",\"type\":\"\",\"controlpanel\":\"8nixi\",\"access\":\"\",\"online\":\"Online\",\"image\":\"GoFigure.jpg\",\"ip\":\"\",\"batLevel\":\"75\",\"B1\":\"\",\"B2\":\"\",\"B3\":\"\",\"B4\":\"\",\"B5\":\"\",\"B6\":\"\",\"B7\":\"\",\"B8\":\"\",\"message\":\"Hello mom!\"}";
-
-deserializeJson(doc, line);
-
-const char* id = doc["id"]; // "658435603"
-const char* admin = doc["admin"]; // "123456789"
-const char* user = doc["user"]; // ""
-const char* name = doc["name"]; // "Prof Ferber Farber"
-const char* description = doc["description"]; // "Robotics Debokler"
-const char* location = doc["location"]; // "Laboratory"
-const char* type = doc["type"]; // ""
-const char* controlpanel = doc["controlpanel"]; // "8nixi"
-const char* access = doc["access"]; // ""
-const char* online = doc["online"]; // "Online"
-const char* image = doc["image"]; // "GoFigure.jpg"
-const char* ip = doc["ip"]; // ""
-const char* batLevel = doc["batLevel"]; // "75"
-const char* P1 = doc["B1"]; // ""
-const char* P2 = doc["B2"]; // ""
-const char* P3 = doc["B3"]; // ""
-const char* P4 = doc["B4"]; // ""
-const char* P5 = doc["B5"]; // ""
-const char* P6 = doc["B6"]; // ""
-const char* P7 = doc["B7"]; // ""
-const char* P8 = doc["B8"]; // ""
-const char* message = doc["message"]; // "Hello mom!"
+    DynamicJsonDocument doc(capacity);
 
 
-//const char *Buttons = P1 + P2 + P3 + P4 + P5 + P6 + P7 + P8;// wouldnt work
-//if (Buttons != OldButtons){
-//
-displayStat();
-//}
+    deserializeJson(doc, line);
 
+    const char* id = doc["id"]; // "658435603"
+    const char* admin = doc["admin"]; // "123456789"
+    const char* user = doc["user"]; // ""
+    const char* name = doc["name"]; // "Prof Ferber Farber"
+    const char* description = doc["description"]; // "Robotics Debokler"
+    const char* location = doc["location"]; // "Laboratory"
+    const char* type = doc["type"]; // ""
+    const char* controlpanel = doc["controlpanel"]; // "8nixi"
+    const char* access = doc["access"]; // ""
+    const char* online = doc["online"]; // "Online"
+    const char* image = doc["image"]; // "GoFigure.jpg"
+    const char* ip = doc["ip"]; // ""
+    const char* batLevel = doc["batLevel"]; // "75"
+    const char* P1 = doc["B1"]; // ""
+    const char* P2 = doc["B2"]; // ""
+    const char* P3 = doc["B3"]; // ""
+    const char* P4 = doc["B4"]; // ""
+    const char* P5 = doc["B5"]; // ""
+    const char* P6 = doc["B6"]; // ""
+    const char* P7 = doc["B7"]; // ""
+    const char* P8 = doc["B8"]; // ""
+    const char* message = doc["message"]; // "Hello mom!"
+    displayStat(name);
 
+    State = !(P1 == "0");
+    digitalWrite(LED, State);//    LED_BUILTIN
 
-
-
-
-    if (P1 == "0"){ State = 0; } else  { State = 1; }
-  digitalWrite(LED, State);//    LED_BUILTIN
-
-//  Serial.print(CLS);
-Serial.print(P1);
-Serial.print(" ");
-Serial.print(P2);
-Serial.print(" ");
-Serial.print(P3);
-Serial.print(" ");
-Serial.print(P4);
-Serial.print(" ");
-Serial.print(P5);
-Serial.print(" ");
-Serial.print(P6);
-Serial.print(" ");
-Serial.print(P7);
-Serial.print(" ");
-Serial.println(P8);
-
-    
-  delay(10);
+    //  Serial.print(CLS);
+    Serial.print(P1);
+    Serial.print(" ");
+    Serial.print(P2);
+    Serial.print(" ");
+    Serial.print(P3);
+    Serial.print(" ");
+    Serial.print(P4);
+    Serial.print(" ");
+    Serial.print(P5);
+    Serial.print(" ");
+    Serial.print(P6);
+    Serial.print(" ");
+    Serial.print(P7);
+    Serial.print(" ");
+    Serial.println(P8);
+   delay(10);
   }
 
   //Serial.println("closing connection");
 }
 
 
-void displayStat() {
-
+void displayStat(const char *name) {
   display.setTextColor(WHITE,BLACK);
   display.setTextSize(2);
   display.setCursor(0,20);
   display.print("Msg:");
-//display.print(str(name) );
-display.display();
- // const char* OldButtons = Buttons;
+  display.print(name);
+  display.display();
 }
 
