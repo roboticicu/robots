@@ -18,6 +18,15 @@
  * youtube.com/watch?v=3U-qbii1saw
  * 
  * arduinojson.org/v6/assistant/
+ * 
+ * 
+ * This is the bot under test:
+ * robotic.icu/robot.php?id=934661423
+ * 
+ * This is the bot json code:
+ * robotic.icu/robotid.php?id=934661423
+ * 
+ * 
  */
 
 #include <ESP8266WiFi.h>
@@ -61,18 +70,26 @@ Adafruit_SSD1306 display(-1);
 
 
 int State = 1;
-int LED   = 2;
-
+int LED1   = 16 ;// 2 16
+int LED2   = 2 ;// 2 16
+int i =0;
 
 
 void setup() {
+  pinMode(LED1, OUTPUT);
+  digitalWrite(LED1, LOW);// turn off
+  pinMode(LED2, OUTPUT);
+  digitalWrite(LED2, LOW);// turn off
+  //
   pinMode(LED_BUILTIN, OUTPUT);
+  //
+  digitalWrite(LED_BUILTIN, LOW);// turn off
   /* ====== setup section OLED ====== */
   // initialize and clear display
   display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
-  display.clearDisplay();
   display.setRotation(rotation);// h 0,2  v 1,3
 
+  display.clearDisplay();
   // display a line of text
   display.setTextColor(WHITE,BLACK);
   display.setTextSize(1);
@@ -109,9 +126,11 @@ void setup() {
   WiFi.begin(ssid, pass);
  
   while (WiFi.status() != WL_CONNECTED) {
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     delay(500);
     Serial.print(".");
   }
+  digitalWrite(LED_BUILTIN, HIGH);// turn off
 
   Serial.println("");
   Serial.println("WiFi connected"); 
@@ -200,43 +219,78 @@ DynamicJsonDocument doc(capacity);
 
 deserializeJson(doc, line);
 
-const char* id = doc["id"]; // "658435603"
-const char* admin = doc["admin"]; // "123456789"
-const char* user = doc["user"]; // ""
-const char* name = doc["name"]; // "Prof Ferber Farber"
-const char* description = doc["description"]; // "Robotics Debokler"
-const char* location = doc["location"]; // "Laboratory"
-const char* type = doc["type"]; // ""
-const char* controlpanel = doc["controlpanel"]; // "8nixi"
-const char* access = doc["access"]; // ""
-const char* online = doc["online"]; // "Online"
-const char* image = doc["image"]; // "GoFigure.jpg"
-const char* ip = doc["ip"]; // ""
-const char* batLevel = doc["batLevel"]; // "75"
-const char* P1 = doc["B1"]; // ""
-const char* P2 = doc["B2"]; // ""
-const char* P3 = doc["B3"]; // ""
-const char* P4 = doc["B4"]; // ""
-const char* P5 = doc["B5"]; // ""
-const char* P6 = doc["B6"]; // ""
-const char* P7 = doc["B7"]; // ""
-const char* P8 = doc["B8"]; // ""
-const char* message = doc["message"]; // "Hello mom!"
+const char * id = doc["id"]; // "658435603"
+const char * admin = doc["admin"]; // "123456789"
+const char * user = doc["user"]; // ""
+const char * name = doc["name"]; // "Prof Ferber Farber"
+const char * description = doc["description"]; // "Robotics Debokler"
+const char * location = doc["location"]; // "Laboratory"
+const char * type = doc["type"]; // ""
+const char * controlpanel = doc["controlpanel"]; // "8nixi"
+const char * access = doc["access"]; // ""
+const char * online = doc["online"]; // "Online"
+const char * image = doc["image"]; // "GoFigure.jpg"
+const char * ip = doc["ip"]; // ""
+const char * batLevel = doc["batLevel"]; // "75"
+int P1 = doc["B1"]; // ""
+const char * P2 = doc["B2"]; // ""
+const char * P3 = doc["B3"]; // ""
+const char * P4 = doc["B4"]; // ""
+const char * P5 = doc["B5"]; // ""
+const char * P6 = doc["B6"]; // ""
+const char * P7 = doc["B7"]; // ""
+const char * P8 = doc["B8"]; // ""
+const char * message = doc["message"]; // "Hello mom!"
+
+//displayStat();
+
+  display.setTextColor(WHITE,BLACK);
+  display.setTextSize(1);
+  display.setCursor(0,10);
+  display.print("P1:");
+  display.print(P1);
+  display.print(" ");
+    digitalWrite(LED2, !P1);
+  //display.print("LED_BUILTIN: ");
+  //display.println(LED_BUILTIN);
+  //
+  display.print(":");
+  display.println(message);
+display.display();
+
+
+
+/*
+
+    if ( State == 0){
+      State = 0; 
+      display.print("Msg: P0");
+    } else  { 
+      State = 1; 
+      display.print("Msg: P1");
+    }
+//display.print(str(name) );
+
+
+*/
+
+
+
 
 
 //const char *Buttons = P1 + P2 + P3 + P4 + P5 + P6 + P7 + P8;// wouldnt work
 //if (Buttons != OldButtons){
-//
-displayStat();
 //}
 
 
 
+Serial.print("P1 ]");
+Serial.print(P1);
+Serial.println("[");
 
 
-
-    if (P1 == "0"){ State = 0; } else  { State = 1; }
-  digitalWrite(LED, State);//    LED_BUILTIN
+   // if (P1==0){ State = 0; } else  { State = 1; }
+ // digitalWrite(LED1, State);//    LED_BUILTIN
 
 //  Serial.print(CLS);
 Serial.print(P1);
@@ -264,13 +318,24 @@ Serial.println(P8);
 
 
 void displayStat() {
-
+// const char * P1 ;
   display.setTextColor(WHITE,BLACK);
-  display.setTextSize(2);
-  display.setCursor(0,20);
+  display.setTextSize(1);
+  display.setCursor(0,10);
+  //display.print("LED_BUILTIN: ");
+  //display.println(LED_BUILTIN);
+  //
   display.print("Msg:");
+//  display.println(message);
+    if ( State == 0){
+      State = 0; 
+      display.print("Msg: P0");
+    } else  { 
+      State = 1; 
+      display.print("Msg: P1");
+    }
 //display.print(str(name) );
 display.display();
- // const char* OldButtons = Buttons;
+ // const char* OldButtons = Buttons;// LED_BUILTIN
 }
 
