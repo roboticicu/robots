@@ -366,7 +366,9 @@ Serial.print(P6);
 Serial.print(" ");
 Serial.print(P7);
 Serial.print(" ");
-Serial.println(P8);
+Serial.print(P8);
+Serial.print(" ");
+Serial.println(message);
 
     
   delay(10);
