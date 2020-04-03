@@ -263,7 +263,18 @@ const char * message = doc["message"]; // "Hello mom!"
     if (P8 == 1) { 
       digitalWrite(LED1, !P1); 
       digitalWrite(LED2, !P2); 
-      savedState=P1;
+ display.setTextColor(WHITE,BLACK);
+  display.setTextSize(1);
+  display.setCursor(0,10);
+  display.println(name);
+   display.print("P1:");
+  display.print(P1);
+   display.print("  P2:");
+  display.println(P2);
+ //  display.print("P3:");
+  //display.println(P3);
+  //display.print(" ");
+  display.display();
       }  
 
 
@@ -281,18 +292,6 @@ const char * message = doc["message"]; // "Hello mom!"
 //displayStat();
 
  /*
- display.setTextColor(WHITE,BLACK);
-  display.setTextSize(1);
-  display.setCursor(0,10);
-  display.println(name);
-   display.print("P1:");
-  display.println(P1);
-   display.print("P2:");
-  display.println(P2);
-   display.print("P3:");
-  display.println(P3);
-  //display.print(" ");
-  display.display();
 */ 
 
 
