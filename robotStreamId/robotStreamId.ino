@@ -261,8 +261,13 @@ const char * message = doc["message"]; // "Hello mom!"
 
 
     if (P8 == 1) { 
-      digitalWrite(LED1, !P1); 
-      digitalWrite(LED2, !P2); 
+      digitalWrite(LED1, !P1);
+      digitalWrite(LED2, !P2);
+      displayStat(P1, P2, P3, online);
+      }  
+
+
+      /*
  display.setTextColor(WHITE,BLACK);
   display.setTextSize(1);
   display.setCursor(0,10);
@@ -270,15 +275,15 @@ const char * message = doc["message"]; // "Hello mom!"
    display.print("P1:");
   display.print(P1);
    display.print("  P2:");
-  display.println(P2);
+  display.print(P2);
  //  display.print("P3:");
   //display.println(P3);
   //display.print(" ");
   display.display();
-      }  
 
 
-      /*
+
+
     if (savedState != P1) { 
       digitalWrite(LED1, !P1); 
       savedState=P1;
@@ -371,10 +376,22 @@ Serial.println(P8);
 }
 
 
-void displayStat(int P1, int P2, const char * online) {
+void displayStat(int P1, int P2,  int P3, const char *online) {
   display.setTextColor(WHITE,BLACK);
   display.setTextSize(1);
   display.setCursor(0,10);
+  display.println(online);
+   display.print("P1:");
+  display.print(P1);
+   display.print("  P2:");
+  display.print(P2);
+   display.print("  P3:");
+  display.println(P3);
+display.display();
+}
+
+/*
+
     display.println(online);
     //display.println("  ");
     if ( P1 == 0){
@@ -393,8 +410,9 @@ void displayStat(int P1, int P2, const char * online) {
     }
       display.print(P1);
       display.print(P2);
-display.display();
-}
+
+
+*/
 
 
 // const char * P1 ;
