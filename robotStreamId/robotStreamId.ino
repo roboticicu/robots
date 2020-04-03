@@ -33,6 +33,8 @@
 #include <ArduinoJson.h>
 
 
+//static int savedState = 1;
+ int savedState = 1;
 
 
 
@@ -76,6 +78,12 @@ int i =0;
 
 
 void setup() {
+
+
+
+
+
+  
   pinMode(LED1, OUTPUT);
   digitalWrite(LED1, LOW);// turn off
   pinMode(LED2, OUTPUT);
@@ -143,6 +151,8 @@ int value = 0;
 void loop() {
   delay(1000);
   ++value;
+
+
 
   //Serial.print("connecting to ");
   //Serial.println(host);
@@ -212,11 +222,16 @@ https://www.youtube.com/watch?v=dQyXuFWylm4
     //    Serial.println(line);
 
 
-    const size_t capacity = JSON_OBJECT_SIZE(22) + 370;
+    const size_t capacity = JSON_OBJECT_SIZE(22) + 270;
 DynamicJsonDocument doc(capacity);
 
-// const char* json = "{\"id\":\"658435603\",\"admin\":\"123456789\",\"user\":\"\",\"name\":\"Prof Ferber Farber\",\"description\":\"Robotics Debokler\",\"location\":\"Laboratory\",\"type\":\"\",\"controlpanel\":\"8nixi\",\"access\":\"\",\"online\":\"Online\",\"image\":\"GoFigure.jpg\",\"ip\":\"\",\"batLevel\":\"75\",\"B1\":\"\",\"B2\":\"\",\"B3\":\"\",\"B4\":\"\",\"B5\":\"\",\"B6\":\"\",\"B7\":\"\",\"B8\":\"\",\"message\":\"Hello mom!\"}";
+/*
+const char* json = "{\"id\":\"658435603\",\"admin\":\"123456789\",\"user\":\"\",\"name\":\"Prof Ferber Farber\",
+\"description\":\"Robotics Debokler\",\"location\":\"Laboratory\",\"type\":\"\",\"controlpanel\":\"8nixi\",
+\"access\":\"\",\"online\":\"Online\",\"image\":\"GoFigure.jpg\",\"ip\":\"\",\"batLevel\":\"75\",
+\"B1\":\"\",\"B2\":\"\",\"B3\":\"\",\"B4\":\"\",\"B5\":\"\",\"B6\":\"\",\"B7\":\"\",\"B8\":\"\",\"message\":\"Hello mom!\"}";
 
+*/ 
 deserializeJson(doc, line);
 
 const char * id = doc["id"]; // "658435603"
@@ -233,30 +248,61 @@ const char * image = doc["image"]; // "GoFigure.jpg"
 const char * ip = doc["ip"]; // ""
 const char * batLevel = doc["batLevel"]; // "75"
 int P1 = doc["B1"]; // ""
-const char * P2 = doc["B2"]; // ""
-const char * P3 = doc["B3"]; // ""
-const char * P4 = doc["B4"]; // ""
-const char * P5 = doc["B5"]; // ""
-const char * P6 = doc["B6"]; // ""
-const char * P7 = doc["B7"]; // ""
-const char * P8 = doc["B8"]; // ""
+int P2 = doc["B2"]; // ""
+int P3 = doc["B3"]; // ""
+int P4 = doc["B4"]; // ""
+int P5 = doc["B5"]; // ""
+int P6 = doc["B6"]; // ""
+int P7 = doc["B7"]; // ""
+int P8 = doc["B8"]; // ""
 const char * message = doc["message"]; // "Hello mom!"
+
+
+
+
+    if (P8 == 1) { 
+      digitalWrite(LED1, !P1); 
+      digitalWrite(LED2, !P2); 
+      savedState=P1;
+      }  
+
+
+      /*
+    if (savedState != P1) { 
+      digitalWrite(LED1, !P1); 
+      savedState=P1;
+      }  
+    //    digitalWrite(LED1, !P1);
+*/
+
+
+
 
 //displayStat();
 
-  display.setTextColor(WHITE,BLACK);
+ /*
+ display.setTextColor(WHITE,BLACK);
   display.setTextSize(1);
   display.setCursor(0,10);
-  display.print("P1:");
-  display.print(P1);
-  display.print(" ");
-    digitalWrite(LED2, !P1);
+  display.println(name);
+   display.print("P1:");
+  display.println(P1);
+   display.print("P2:");
+  display.println(P2);
+   display.print("P3:");
+  display.println(P3);
+  //display.print(" ");
+  display.display();
+*/ 
+
+
+
+
+  
   //display.print("LED_BUILTIN: ");
   //display.println(LED_BUILTIN);
   //
-  display.print(":");
-  display.println(message);
-display.display();
+  //display.print(":");
 
 
 
@@ -284,15 +330,24 @@ display.display();
 
 
 
-Serial.print("P1 ]");
-Serial.print(P1);
-Serial.println("[");
+//Serial.print("P1 ]");
+//Serial.print(P1);
+//Serial.println("[");
 
 
    // if (P1==0){ State = 0; } else  { State = 1; }
  // digitalWrite(LED1, State);//    LED_BUILTIN
 
-//  Serial.print(CLS);
+
+
+
+
+
+
+ 
+//displayStat(P1, P2, online);
+
+Serial.print(">>> ");
 Serial.print(P1);
 Serial.print(" ");
 Serial.print(P2);
@@ -317,25 +372,42 @@ Serial.println(P8);
 }
 
 
-void displayStat() {
-// const char * P1 ;
+void displayStat(int P1, int P2, const char * online) {
   display.setTextColor(WHITE,BLACK);
   display.setTextSize(1);
   display.setCursor(0,10);
+    display.println(online);
+    //display.println("  ");
+    if ( P1 == 0){
+      //State = 0; 
+      display.print("\n P1 0  OFF");
+    } else  { 
+      //State = 1; 
+      display.print("\n P1 1  ON ");
+    }
+    if ( P2 == 0){
+      //State = 0; 
+      display.print("\n P2 0  OFF");
+    } else  { 
+      //State = 1; 
+      display.print("\n P2 1  ON ");
+    }
+      display.print(P1);
+      display.print(P2);
+display.display();
+}
+
+
+// const char * P1 ;
+
   //display.print("LED_BUILTIN: ");
   //display.println(LED_BUILTIN);
-  //
-  display.print("Msg:");
-//  display.println(message);
-    if ( State == 0){
-      State = 0; 
-      display.print("Msg: P0");
-    } else  { 
-      State = 1; 
-      display.print("Msg: P1");
-    }
+  //   display.print("Msg:");
+// 
+
+
+
 //display.print(str(name) );
-display.display();
  // const char* OldButtons = Buttons;// LED_BUILTIN
-}
+  
 
