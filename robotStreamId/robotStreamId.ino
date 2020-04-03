@@ -222,7 +222,7 @@ https://www.youtube.com/watch?v=dQyXuFWylm4
     //    Serial.println(line);
 
 
-    const size_t capacity = JSON_OBJECT_SIZE(22) + 270;
+    const size_t capacity = JSON_OBJECT_SIZE(22) + 320;
 DynamicJsonDocument doc(capacity);
 
 /*
@@ -263,7 +263,7 @@ const char * message = doc["message"]; // "Hello mom!"
     if (P8 == 1) { 
       digitalWrite(LED1, !P1);
       digitalWrite(LED2, !P2);
-      displayStat(P1, P2, P3, online);
+      displayStat(P1, P2, P3, message);
       }  
 
 
