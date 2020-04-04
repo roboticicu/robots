@@ -48,7 +48,12 @@ char pass[] = "xxxxxxxxxx";// your network password
 
 const char* host = "www.robotic.icu";
 const char* streamId   = "xxxxxxx";
-const char* DeviceID = "934661423";// 934661423 286531102
+const char* DeviceID = "233683192";
+/* 
+
+934661423 286531102 112518130 368141751 368141751
+770623542 749236437 513739377 471922699 233683192
+*/
 
 int rotation=0; // display upright horizontal
 
@@ -84,18 +89,19 @@ void setup() {
 
 
   
-  pinMode(LED1, OUTPUT);
   digitalWrite(LED1, LOW);// turn off
-  pinMode(LED2, OUTPUT);
+  pinMode(LED1, OUTPUT);
   digitalWrite(LED2, LOW);// turn off
-  //
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED2, OUTPUT);
   //
   digitalWrite(LED_BUILTIN, LOW);// turn off
+  //
+  pinMode(LED_BUILTIN, OUTPUT);
   /* ====== setup section OLED ====== */
   // initialize and clear display
   display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
   display.setRotation(rotation);// h 0,2  v 1,3
+  /* ====== setup section OLED ====== */
 
   display.clearDisplay();
   // display a line of text
@@ -109,7 +115,6 @@ void setup() {
   //display.println(ssid);
   //display.println(password);
   display.display();
-  /* ====== setup section OLED ====== */
 
 
 
@@ -222,7 +227,7 @@ https://www.youtube.com/watch?v=dQyXuFWylm4
     //    Serial.println(line);
 
 
-    const size_t capacity = JSON_OBJECT_SIZE(22) + 320;
+    const size_t capacity = JSON_OBJECT_SIZE(22) + 1024;
 DynamicJsonDocument doc(capacity);
 
 /*
@@ -263,7 +268,7 @@ const char * message = doc["message"]; // "Hello mom!"
     if (P8 == 1) { 
       digitalWrite(LED1, !P1);
       digitalWrite(LED2, !P2);
-      displayStat(P1, P2, P3, message);
+      displayStat(P1, P2, P3, P4, P5, P6, P7, name);
       }  
 
 
@@ -378,17 +383,33 @@ Serial.println(message);
 }
 
 
-void displayStat(int P1, int P2,  int P3, const char *online) {
+void displayStat(int P1, int P2, int P3, int P4, int P5, int P6, int P7, const char *online) {
   display.setTextColor(WHITE,BLACK);
   display.setTextSize(1);
-  display.setCursor(0,10);
+  display.setCursor(0,8);
   display.println(online);
-   display.print("P1:");
+  display.setCursor(0,17);
+   display.print("P1 ");
+   display.print("P2 ");
+   display.print("P3 ");
+   display.print("P4 ");
+   display.print("P5 ");
+   display.print("P6 ");
+   display.println("P7");
   display.print(P1);
-   display.print("  P2:");
+   display.print("  ");
   display.print(P2);
-   display.print("  P3:");
-  display.println(P3);
+   display.print("  ");
+  display.print(P3);
+   display.print("  ");
+  display.print(P4);
+   display.print("  ");
+  display.print(P5);
+   display.print("  ");
+  display.print(P6);
+   display.print("  ");
+  display.print(P7);
+   display.print("  ");
 display.display();
 }
 
