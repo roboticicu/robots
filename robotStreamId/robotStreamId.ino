@@ -48,7 +48,7 @@ char pass[] = "xxxxxxxxxx";// your network password
 
 const char* host = "www.robotic.icu";
 const char* streamId   = "xxxxxxx";
-const char* DeviceID = "233683192";
+const char* DeviceID = "749236437";// desk lamp
 /* 
 
 934661423 286531102 112518130 368141751 368141751
@@ -75,7 +75,7 @@ Adafruit_SSD1306 display(-1);
 /* ====== OLED Setup ====== */
 
 
-
+#define Relay1 D5
 int State = 1;
 int LED1   = 16 ;// 2 16
 int LED2   = 2 ;// 2 16
@@ -85,6 +85,8 @@ int i =0;
 void setup() {
 
 
+  digitalWrite(Relay1, LOW);// turn off
+  pinMode(Relay1, OUTPUT);
 
 
 
@@ -260,15 +262,18 @@ int P5 = doc["B5"]; // ""
 int P6 = doc["B6"]; // ""
 int P7 = doc["B7"]; // ""
 int P8 = doc["B8"]; // ""
+int b = doc["bit"]; // ""
 const char * message = doc["message"]; // "Hello mom!"
 
 
+    int startTime = millis();
 
 
-    if (P8 == 1) { 
-      digitalWrite(LED1, !P1);
-      digitalWrite(LED2, !P2);
-      displayStat(P1, P2, P3, P4, P5, P6, P7, name);
+    if (b == 1) { 
+      digitalWrite(Relay1, P1);// D5
+      digitalWrite(LED1, !P2);
+      digitalWrite(LED2, !P3);
+      displayStat(P1, P2, P3, P4, P5, P6, P7, P8, name);
       }  
 
 
@@ -326,11 +331,7 @@ const char * message = doc["message"]; // "Hello mom!"
     }
 //display.print(str(name) );
 
-
 */
-
-
-
 
 
 //const char *Buttons = P1 + P2 + P3 + P4 + P5 + P6 + P7 + P8;// wouldnt work
@@ -338,24 +339,13 @@ const char * message = doc["message"]; // "Hello mom!"
 //}
 
 
-
-//Serial.print("P1 ]");
-//Serial.print(P1);
-//Serial.println("[");
-
-
    // if (P1==0){ State = 0; } else  { State = 1; }
  // digitalWrite(LED1, State);//    LED_BUILTIN
-
-
-
-
-
-
 
  
 //displayStat(P1, P2, online);
 
+    if (P8 == 1) { 
 Serial.print(">>> ");
 Serial.print(P1);
 Serial.print(" ");
@@ -374,8 +364,9 @@ Serial.print(" ");
 Serial.print(P8);
 Serial.print(" ");
 Serial.println(message);
-
-    
+    }
+    int difTime = millis()-startTime;
+    //Serial.println(difTime);
   delay(10);
   }
 
@@ -383,33 +374,38 @@ Serial.println(message);
 }
 
 
-void displayStat(int P1, int P2, int P3, int P4, int P5, int P6, int P7, const char *online) {
+void displayStat(int P1, int P2, int P3, int P4, int P5, int P6, int P7, int P8, const char *online) {
   display.setTextColor(WHITE,BLACK);
   display.setTextSize(1);
   display.setCursor(0,8);
   display.println(online);
   display.setCursor(0,17);
-   display.print("P1 ");
-   display.print("P2 ");
-   display.print("P3 ");
-   display.print("P4 ");
-   display.print("P5 ");
-   display.print("P6 ");
-   display.println("P7");
+   display.println("P: 1 2 3 4 5 6 7 8");
+   display.print("S: ");
   display.print(P1);
-   display.print("  ");
+   display.print(" ");
   display.print(P2);
-   display.print("  ");
+   display.print(" ");
   display.print(P3);
-   display.print("  ");
+   display.print(" ");
   display.print(P4);
-   display.print("  ");
+   display.print(" ");
   display.print(P5);
-   display.print("  ");
+   display.print(" ");
   display.print(P6);
-   display.print("  ");
+   display.print(" ");
   display.print(P7);
+   display.print(" ");
+   display.print(P8);
+   /*
    display.print("  ");
+   display.print("  ");
+   display.print("  ");
+   display.print("  ");
+   display.print("  ");
+   display.print("  ");
+   display.print("  ");
+   */
 display.display();
 }
 
