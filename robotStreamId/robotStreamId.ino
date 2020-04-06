@@ -28,6 +28,9 @@
  * 
  * 
  */
+int Bar = 0;
+int range = 18;
+
 
 #include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
@@ -47,12 +50,14 @@ char pass[] = "xxxxxxxxxx";// your network password
 ==== */
 
 const char* host = "www.robotic.icu";
-const char* streamId   = "xxxxxxx";
-const char* DeviceID = "749236437";// desk lamp
+const char* streamId = "xxxxxxxxx";
+const char* DeviceID = "992438994";// desk lamp
 /* 
 
 934661423 286531102 112518130 368141751 368141751
 770623542 749236437 513739377 471922699 233683192
+417658552 240527013 907864801 168036030 184884263
+876975430 992438994
 */
 
 int rotation=0; // display upright horizontal
@@ -76,6 +81,7 @@ Adafruit_SSD1306 display(-1);
 
 
 #define Relay1 D5
+#define Relay2 D6
 int State = 1;
 int LED1   = 16 ;// 2 16
 int LED2   = 2 ;// 2 16
@@ -86,7 +92,9 @@ void setup() {
 
 
   digitalWrite(Relay1, LOW);// turn off
-  pinMode(Relay1, OUTPUT);
+       pinMode(Relay1, OUTPUT);
+  digitalWrite(Relay2, LOW);// turn off
+       pinMode(Relay2, OUTPUT);
 
 
 
@@ -269,12 +277,30 @@ const char * message = doc["message"]; // "Hello mom!"
     int startTime = millis();
 
 
+    if (controlpanel != "meter") {
+      if (b == 1) { 
+        digitalWrite(Relay1, P1);// D5
+        digitalWrite(Relay2, P2);// D4
+        digitalWrite(LED1, !P3);
+        digitalWrite(LED2, !P4);
+        displayStat(P1, P2, P3, P4, P5, P6, P7, P8, name, description);
+      }
+    }
+
+
+
+
+    if (controlpanel == "meter") {
     if (b == 1) { 
       digitalWrite(Relay1, P1);// D5
       digitalWrite(LED1, !P2);
       digitalWrite(LED2, !P3);
-      displayStat(P1, P2, P3, P4, P5, P6, P7, P8, name);
+      //displayBatt(P1, P2, P3, P4, P5, P6, P7, batLevel, name, description);
       }  
+      }  
+
+
+
 
 
       /*
@@ -374,72 +400,125 @@ Serial.println(message);
 }
 
 
-void displayStat(int P1, int P2, int P3, int P4, int P5, int P6, int P7, int P8, const char *online) {
+void displayStat(int P1, int P2, int P3, int P4, int P5, int P6, int P7, int P8, const char *name, const char *description) {
   display.setTextColor(WHITE,BLACK);
   display.setTextSize(1);
   display.setCursor(0,8);
-  display.println(online);
-  display.setCursor(0,17);
-   display.println("P: 1 2 3 4 5 6 7 8");
-   display.print("S: ");
-  display.print(P1);
-   display.print(" ");
-  display.print(P2);
-   display.print(" ");
-  display.print(P3);
-   display.print(" ");
-  display.print(P4);
-   display.print(" ");
-  display.print(P5);
-   display.print(" ");
-  display.print(P6);
-   display.print(" ");
-  display.print(P7);
-   display.print(" ");
-   display.print(P8);
-   /*
-   display.print("  ");
-   display.print("  ");
-   display.print("  ");
-   display.print("  ");
-   display.print("  ");
-   display.print("  ");
-   display.print("  ");
-   */
+  display.println(name);
+  display.println(description);
+  display.setCursor(15,25);
+   //   display.print("P: ");
+if(P1){
+  display.setTextColor(BLACK,WHITE);
+  display.print("1");
+}else{
+  display.setTextColor(WHITE,BLACK);
+  display.print("1");
+} 
+  display.setTextColor(WHITE,BLACK);display.print(" ");
+if(P2){
+  display.setTextColor(BLACK,WHITE);
+  display.print("2");
+}else{
+  display.setTextColor(WHITE,BLACK);
+  display.print("2");
+} 
+  display.setTextColor(WHITE,BLACK);display.print(" ");
+if(P3){
+  display.setTextColor(BLACK,WHITE);
+  display.print("3");
+}else{
+  display.setTextColor(WHITE,BLACK);
+  display.print("3");
+} 
+  display.setTextColor(WHITE,BLACK);display.print(" ");
+if(P4){
+  display.setTextColor(BLACK,WHITE);
+  display.print("4");
+}else{
+  display.setTextColor(WHITE,BLACK);
+  display.print("4");
+} 
+  display.setTextColor(WHITE,BLACK);display.print(" ");
+if(P5){
+  display.setTextColor(BLACK,WHITE);
+  display.print("5");
+}else{
+  display.setTextColor(WHITE,BLACK);
+  display.print("5");
+} 
+  display.setTextColor(WHITE,BLACK);display.print(" ");
+if(P6){
+  display.setTextColor(BLACK,WHITE);
+  display.print("6");
+}else{
+  display.setTextColor(WHITE,BLACK);
+  display.print("6");
+} 
+  display.setTextColor(WHITE,BLACK);display.print(" ");
+if(P7){
+  display.setTextColor(BLACK,WHITE);
+  display.print("7");
+}else{
+  display.setTextColor(WHITE,BLACK);
+  display.print("7");
+} 
+  display.setTextColor(WHITE,BLACK);display.print(" ");
+if(P8){
+  display.setTextColor(BLACK,WHITE);
+  display.print("8");
+}else{
+  display.setTextColor(WHITE,BLACK);
+  display.print("8");
+} 
+  display.setTextColor(WHITE,BLACK);
+   
 display.display();
 }
 
-/*
 
-    display.println(online);
-    //display.println("  ");
-    if ( P1 == 0){
-      //State = 0; 
-      display.print("\n P1 0  OFF");
-    } else  { 
-      //State = 1; 
-      display.print("\n P1 1  ON ");
-    }
-    if ( P2 == 0){
-      //State = 0; 
-      display.print("\n P2 0  OFF");
-    } else  { 
-      //State = 1; 
-      display.print("\n P2 1  ON ");
-    }
-      display.print(P1);
-      display.print(P2);
+void displayBatt(int P1, int P2, int P3, int P4, int P5, int P6, int P7, int batLevel, const char *name, const char *description) {
+  display.setTextColor(WHITE,BLACK);
+  display.setTextSize(1);
+  display.setCursor(0,8);
+  display.println(name);
+  display.println(batLevel);
+  display.setCursor(15,25);
+
+   float Level = batLevel * (range / 1023.00);
+   float Bar=(Level/range)*(display.width());
+   float Percent=(Level/range)*100;
 
 
-*/
+
+  
+
+  display.setTextSize(2);
+  display.setCursor(10,10);
+  display.print(batLevel,5);// Level Bar Percent
+  //display.println(" v");
+  
+  display.setTextSize(1);
+  display.setCursor(0,20);
+  display.print("0");//uid
+  display.setCursor((display.width()-12),20);
+  display.print(range);//uid
+
+/* ===display bargraph== */
+  display.drawLine(0, 27, display.width(), 27, WHITE);
+  display.fillRect(0, 28, Bar, 3, WHITE);
+  display.fillRect((Bar +1), 28, display.width(), 3, BLACK);
+  display.drawLine(0, 31, display.width(), 31, WHITE);
+  //display.drawRoundRect(17, 8, 93, 18, 4, BLACK);
+  display.display();
+}
 
 
-// const char * P1 ;
 
-  //display.print("LED_BUILTIN: ");
-  //display.println(LED_BUILTIN);
-  //   display.print("Msg:");
-// 
+
+
+
+
 
 
 
