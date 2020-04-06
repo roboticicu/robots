@@ -401,6 +401,13 @@ Serial.println(message);
 
 
 void displayStat(int P1, int P2, int P3, int P4, int P5, int P6, int P7, int P8, const char *name, const char *description) {
+//const  char* mess = description;
+//char dest[21];
+//strncpy(dest,mess,20);
+
+
+  display.fillRect(0, 8, 128, 28, BLACK);
+  
   display.setTextColor(WHITE,BLACK);
   display.setTextSize(1);
   display.setCursor(0,8);
