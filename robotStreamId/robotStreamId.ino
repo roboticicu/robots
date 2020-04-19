@@ -30,7 +30,7 @@
  */
 int Bar = 0;
 int range = 18;
-
+int SerialDebugging = 0;
 
 #include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
@@ -51,13 +51,13 @@ char pass[] = "xxxxxxxxxx";// your network password
 
 const char* host = "www.robotic.icu";
 const char* streamId = "xxxxxxxxx";
-const char* DeviceID = "992438994";// desk lamp
+const char* DeviceID = "240527013";// My Home
 /* 
 
-934661423 286531102 112518130 368141751 368141751
-770623542 749236437 513739377 471922699 233683192
-417658552 240527013 907864801 168036030 184884263
-876975430 992438994
+934661423 240527013 907864801 168036030 184884263
+876975430 992438994 866880631 611452822 286531102 
+112518130 368141751 368141751 770623542 749236437 
+513739377 471922699 233683192 417658552 
 */
 
 int rotation=0; // display upright horizontal
@@ -164,7 +164,7 @@ void setup() {
 int value = 0;
 
 void loop() {
-  delay(1000);
+  delay(1);//1000
   ++value;
 
 
@@ -270,7 +270,7 @@ int P5 = doc["B5"]; // ""
 int P6 = doc["B6"]; // ""
 int P7 = doc["B7"]; // ""
 int P8 = doc["B8"]; // ""
-int b = doc["bit"]; // ""
+int validData = doc["bit"]; // ""
 const char * message = doc["message"]; // "Hello mom!"
 
 
@@ -278,12 +278,26 @@ const char * message = doc["message"]; // "Hello mom!"
 
 
     if (controlpanel != "meter") {
-      if (b == 1) { 
+      if (validData == 1) {
         digitalWrite(Relay1, P1);// D5
         digitalWrite(Relay2, P2);// D4
-        digitalWrite(LED1, !P3);
+
+        if(P8){SerialDebugging = 1;}else{SerialDebugging = 0;}
+
+        
+        if (SerialDebugging == 1) {
+          digitalWrite(LED1,!digitalRead(LED1));
+        }else{
+          digitalWrite(LED1, !P3);
+        }
         digitalWrite(LED2, !P4);
         displayStat(P1, P2, P3, P4, P5, P6, P7, P8, name, description);
+         
+        if (SerialDebugging == 1) {
+         Serial.print("Relay1 "); Serial.print((P1?"On":"Off"));
+         Serial.print("\tRelay2 "); Serial.println((P2?"On":"Off"));
+         //digitalWrite(LED2,!digitalRead(LED2));
+        }
       }
     }
 
@@ -291,13 +305,14 @@ const char * message = doc["message"]; // "Hello mom!"
 
 
     if (controlpanel == "meter") {
-    if (b == 1) { 
-      digitalWrite(Relay1, P1);// D5
-      digitalWrite(LED1, !P2);
-      digitalWrite(LED2, !P3);
-      //displayBatt(P1, P2, P3, P4, P5, P6, P7, batLevel, name, description);
+      if (validData == 1) { 
+        digitalWrite(Relay1, P1);// D5
+        digitalWrite(Relay2, P2);// D4
+        digitalWrite(LED1, !P2);
+        digitalWrite(LED2, !P3);
+        //displayBatt(P1, P2, P3, P4, P5, P6, P7, batLevel, name, description);
       }  
-      }  
+    }  
 
 
 
@@ -371,7 +386,38 @@ const char * message = doc["message"]; // "Hello mom!"
  
 //displayStat(P1, P2, online);
 
-    if (P8 == 1) { 
+
+
+      //Serial.println(SerialDebugging);
+      //Serial.print(b);
+    if (SerialDebugging==1){
+    if (validData==1){
+      Serial.print(">>> ");
+      Serial.print(P1);
+      Serial.print(" ");
+      Serial.print(P2);
+      Serial.print(" ");
+      Serial.print(P3);
+      Serial.print(" ");
+      Serial.print(P4);
+      Serial.print(" ");
+      Serial.print(P5);
+      Serial.print(" ");
+      Serial.print(P6);
+      Serial.print(" ");
+      Serial.print(P7);
+      Serial.print(" ");
+      Serial.print(P8);
+      Serial.print(" ");
+      Serial.println(message);
+    //Serial.println((P8 ? "ON" : "OFF"));
+    }
+    }
+    //#endif
+
+
+
+    if (P8 == 2) { 
 Serial.print(">>> ");
 Serial.print(P1);
 Serial.print(" ");
