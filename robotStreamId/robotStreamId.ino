@@ -28,27 +28,6 @@
  * 
  * 
  */
-int Bar = 0;
-int range = 18;
-int SerialDebugging = 0;
-
-#include <ESP8266WiFi.h>
-#include <ArduinoJson.h>
-
-
-//static int savedState = 1;
- int savedState = 1;
-
-
-
-//const char* ssid     = "your-ssid";
-//const char* password = "your-password";
-#include <Logins.h>
-/* ==== Logins.h content below...store in libraries
-char ssid[] = "xxxxxxxxxx";// your network SSID (name)
-char pass[] = "xxxxxxxxxx";// your network password
-==== */
-
 const char* host = "www.robotic.icu";
 const char* streamId = "xxxxxxxxx";
 const char* DeviceID = "240527013";// My Home
@@ -60,12 +39,54 @@ const char* DeviceID = "240527013";// My Home
 513739377 471922699 233683192 417658552 
 */
 
-int rotation=0; // display upright horizontal
+
+//const char* ssid     = "your-ssid";
+//const char* password = "your-password";
+#include <Logins.h>
+/* ====  store content below in: libraries/Logins/Logins.h
+char ssid[] = "xxxxxxxxxx";// your network SSID (name)
+char pass[] = "xxxxxxxxxx";// your network password
+==== */
+
+#include <ArduinoJson.h>
+
+#ifdef ESP8266
+#include <ESP8266WiFi.h>
+//#include <ESP8266HTTPClient.h>
+//#include <ESP8266Ping.h>
+#elif ESP32
+#include <WiFi.h>
+//#include "SPIFFS.h"
+//#include <HTTPClient.h>
+#endif
+
+/* ====== int Setup ====== */
+int SerialDebugging = 0;
+
+#define Relay1 D5
+#define Relay2 D6
+int LED1   = 16 ;// 2 16
+int LED2   = 2 ;// 2 16
+int i =0;
+
+
+int Bar = 0;
+int range = 18;
+
+int State = 1;
+//static int savedState = 1;
+ int savedState = 1;
+
+/* ====== int Setup ====== */
+
+
+
 
 
 /* ====== OLED Setup ====== */
 #include <SPI.h>
 #include <Wire.h>
+int rotation=0; // display upright horizontal
   #include <Adafruit_SSD1306.h>
 //  #include <Adafruit_SSD1306_64.h>
 #include <Adafruit_GFX.h>
@@ -80,12 +101,6 @@ Adafruit_SSD1306 display(-1);
 /* ====== OLED Setup ====== */
 
 
-#define Relay1 D5
-#define Relay2 D6
-int State = 1;
-int LED1   = 16 ;// 2 16
-int LED2   = 2 ;// 2 16
-int i =0;
 
 
 void setup() {
@@ -164,7 +179,7 @@ void setup() {
 int value = 0;
 
 void loop() {
-  delay(1);//1000
+  delay(500);//100-1000
   ++value;
 
 
