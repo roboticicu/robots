@@ -69,8 +69,8 @@ const char* device = "esp32  ";
 int baud = 9600;
 int SerialDebugging = 0;
 
-
-
+#define Relay1 D5
+#define Relay2 D6
 int LED1   = 16 ;// 2 16
 int LED2   = 2 ;// 2 16
 int i =0;
@@ -83,17 +83,6 @@ int State = 1;
 //static int savedState = 1;
  int savedState = 1;
 
- 
-
-//
-#define Relay1 D5
-//
-#define Relay2 D6
-#define tx D3
-#define rx D4
-// #include <SoftwareSerial.h>
-// SoftwareSerial ledSerial(2, 3); // RX, TX
-
 /* ====== int Setup ====== */
 
 
@@ -102,16 +91,13 @@ const char * lastmessage = "";
 String LedSignPrint(const char * message){
   String ledmessage = "";
   String Wakeup = "<ID01>";
-  String Page = "<PA>";
-  ledmessage = Wakeup + Wakeup + Page + message;
+  String Page = "<ID01><PA>";
+  ledmessage = Wakeup + Page + message;
   //  led
   Serial.println(ledmessage);
 
 }
 /* ====== LEDsign function ====== */
-
-
-
 
 
 
@@ -136,9 +122,6 @@ Adafruit_SSD1306 display(-1);
 
 
 void setup() {
- //
- Serial.begin(baud);
-// ledSerial.begin(9600);//LED sign limit
 
 
   digitalWrite(Relay1, LOW);// turn off
@@ -191,6 +174,7 @@ void setup() {
 
 
   
+  Serial.begin(baud);
   delay(10);
 
   // We start by connecting to a WiFi network
@@ -328,11 +312,6 @@ int validData = doc["bit"]; // ""
 const char * message = doc["message"]; // "Hello mom!"
 
 
-    if ((validData == 1)&&(lastmessage != message)) {
-      LedSignPrint(message);
-      lastmessage = message;
-    }
-    
     int startTime = millis();
 
 
@@ -340,7 +319,6 @@ const char * message = doc["message"]; // "Hello mom!"
       if (validData == 1) {
         digitalWrite(Relay1, P1);// D5
         digitalWrite(Relay2, P2);// D4
-
 
         if(P8){SerialDebugging = 1;}else{SerialDebugging = 0;}
 
@@ -468,8 +446,15 @@ const char * message = doc["message"]; // "Hello mom!"
       Serial.print(P7);
       Serial.print(" ");
       Serial.print(P8);
-      Serial.print(" ");
+      Serial.println("<ID00>\n");
+      Serial.print("<ID00><FQ><CC>");
       Serial.println(message);
+
+      // LedSignPrint(message);
+
+
+
+      
     //Serial.println((P8 ? "ON" : "OFF"));
     }
     }
