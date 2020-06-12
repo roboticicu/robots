@@ -67,6 +67,10 @@ const char* device = "esp32  ";
 
 /* ====== int Setup ====== */
 int baud = 9600;
+
+int wakeupFlag = 1;
+int timeout = 0;
+
 int SerialDebugging = 0;
 
 #define Relay1 D5
@@ -90,11 +94,14 @@ int State = 1;
 const char * lastmessage = "";
 String LedSignPrint(const char * message){
   String ledmessage = "";
-  String Wakeup = "<ID01>";
+  String Wakeup = "<ID01>\r\n";
   String Page = "<ID01><PA>";
-  ledmessage = Wakeup + Page + message;
+  String eol = "\r\n";
+  ledmessage = Page + message + eol;
   //  led
-  Serial.println(ledmessage);
+  Serial.print(Wakeup);
+  delay(30000);
+  Serial.print(ledmessage);
 
 }
 /* ====== LEDsign function ====== */
@@ -149,6 +156,7 @@ void setup() {
   /* ====== setup section OLED ====== */
 
   display.clearDisplay();
+  display.display();
   // display a line of text
   display.setTextColor(WHITE,BLACK);
   display.setTextSize(1);
@@ -445,10 +453,10 @@ const char * message = doc["message"]; // "Hello mom!"
       Serial.print(" ");
       Serial.print(P7);
       Serial.print(" ");
-      Serial.print(P8);
-      Serial.println("<ID00>\n");
-      Serial.print("<ID00><FQ><CC>");
-      Serial.println(message);
+      Serial.println(P8);
+      //Serial.print("\r\n");
+      //Serial.println("<0x0D><0x0A>");
+      
 
       // LedSignPrint(message);
 
@@ -459,6 +467,33 @@ const char * message = doc["message"]; // "Hello mom!"
     }
     }
     //#endif
+
+    if (P7 == 1){
+      
+      if (lastmessage != message){
+        if (wakeupFlag){
+           Serial.print("<ID01>\r\n");
+           timeout = millis() + 15000;
+           wakeupFlag = 0;
+        }else{
+           if(millis() > timeout){
+           Serial.print("<ID01><PA>");
+           Serial.print("<FL><FO>");
+           //Serial.print("<CL><FI><SA>Backers: ");
+           Serial.print(message);
+           Serial.print("\r\n");
+           wakeupFlag = 1;
+           lastmessage = message;
+           }// timeout
+        }// wakeupFlag
+      
+      }else{// lastmessage
+        // wakeupFlag = 1;
+      }
+      //updateFlag = 0;// not implimented yet
+
+      
+    }
 
 
 
