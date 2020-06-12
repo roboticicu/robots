@@ -468,9 +468,18 @@ const char * message = doc["message"]; // "Hello mom!"
     }
     //#endif
 
+    if (validData==1){
     if (P7 == 1){
+           Serial.print("lastmessage> ");
+           Serial.println(lastmessage);
+           Serial.print("    message> ");
+           Serial.println(message);
       
       if (lastmessage != message){
+           Serial.print("lastmessage: ");
+           Serial.println(lastmessage);
+           Serial.print("    message: ");
+           Serial.println(message);
         if (wakeupFlag){
            Serial.print("<ID01>\r\n");
            timeout = millis() + 15000;
@@ -491,9 +500,10 @@ const char * message = doc["message"]; // "Hello mom!"
         // wakeupFlag = 1;
       }
       //updateFlag = 0;// not implimented yet
+    }
 
       
-    }
+    }// end validData
 
 
 
