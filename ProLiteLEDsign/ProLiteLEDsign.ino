@@ -473,13 +473,15 @@ const char * message = doc["message"]; // "Hello mom!"
            Serial.print("lastmessage> ");
            Serial.println(lastmessage);
            Serial.print("    message> ");
-           Serial.println(message);
+           Serial.print(message);
+           Serial.println(" < Before Does not match! ");
       
       if (lastmessage != message){
            Serial.print("lastmessage: ");
            Serial.println(lastmessage);
            Serial.print("    message: ");
-           Serial.println(message);
+           Serial.print(message);
+           Serial.println(" < After Does not match! ");
         if (wakeupFlag){
            Serial.print("<ID01>\r\n");
            timeout = millis() + 15000;
