@@ -9,20 +9,26 @@ YouTube: youtube.com/watch?v=dzuMXUQwKx8
 Title: Nodemcu ( esp8266 ) and max7219 led matrix display
 
 */
+   int deviceId = 812385871;
+   int msglen = 0;
+
+
+
+   
 #include <ESP8266WiFi.h>
 #include <Wire.h>  // This library is already built in to the Arduino IDE
 
 #include <SPI.h>
 #include <bitBangedSPI.h>
 #include <MAX7219_Dot_Matrix.h>
-const byte chips = 4;//how many display modules
+const byte chips = 8;//how many display modules
 unsigned long lastMoved = 0;
-unsigned long MOVE_INTERVAL = 25;  // mS
+unsigned long MOVE_INTERVAL = 25;  // 25 mS
 int  messageOffset;
 
 MAX7219_Dot_Matrix display (chips, 2);  // Chips / LOAD 
 
-char message [90] = "";
+char message[200] = "";
 String me="";
 
 //const char* ssid = "network_name"; // put your router name
@@ -32,6 +38,14 @@ String me="";
 char ssid[] = "xxxxxxxxxx";// your network SSID (name)
 char pass[] = "xxxxxxxxxx";// your network password
 ==== */
+
+#include <ArduinoJson.h>
+
+
+
+
+
+
  
 //const char* host = "api.thingspeak.com";
 //
@@ -64,6 +78,7 @@ void updateDisplay ()
  
 void setup() {
 
+  Serial.begin(115200);
 
   
     
@@ -72,7 +87,6 @@ void setup() {
 
 
   
-  Serial.begin(115200);
   delay(100);
  
  
@@ -117,10 +131,10 @@ void loop() {
     Serial.println("connection failed");
    
   }
-  
   // We now create a URI for the request
 //  String url = "/apps/thinghttp/send_request?api_key=ZMWY350CCZFKKXAU";
-  String url = "/robotid.php?id=812385871";
+  String url = "/robotid.php?id=";
+  url += deviceId;
   Serial.print("Requesting URL: ");
   Serial.println(url);
   // This will send the request to the server
@@ -156,10 +170,58 @@ void loop() {
    String line = client.readStringUntil('\r');
    
 
+
+
+    const size_t capacity = JSON_OBJECT_SIZE(22) + 1024;
+DynamicJsonDocument doc(capacity);
+
+
+
+deserializeJson(doc, line);
+
+const char * id = doc["id"]; // "658435603"
+const char * admin = doc["admin"]; // "123456789"
+const char * user = doc["user"]; // ""
+const char * name = doc["name"]; // "Prof Ferber Farber"
+const char * description = doc["description"]; // "Robotics Debokler"
+const char * location = doc["location"]; // "Laboratory"
+const char * type = doc["type"]; // ""
+const char * controlpanel = doc["controlpanel"]; // "8nixi"
+const char * access = doc["access"]; // ""
+const char * online = doc["online"]; // "Online"
+const char * image = doc["image"]; // "GoFigure.jpg"
+const char * ip = doc["ip"]; // ""
+const char * batLevel = doc["batLevel"]; // "75"
+int P1 = doc["B1"]; // ""
+int P2 = doc["B2"]; // ""
+int P3 = doc["B3"]; // ""
+int P4 = doc["B4"]; // ""
+int P5 = doc["B5"]; // ""
+int P6 = doc["B6"]; // ""
+int P7 = doc["B7"]; // ""
+int P8 = doc["B8"]; // ""
+const char * message = doc["message"]; // "Hello mom!"
+int validData = doc["bit"]; // ""
+
+
+if (validData == 1){
+  // const char * disptext = message;
+  msglen = strlen(message);
+}
+
+for (int i=0; i < msglen; i++) {
+  
+Serial.print(message[i]);
+}
+
+/* ============== everything above ====================== */
+
+
+
  
 
-int start_loc= find_text("description",line,0);// price.0
-if (start_loc>0) start_loc+=8;
+int start_loc= find_text("message",line,0);// price.0
+if (start_loc>0) start_loc+=0;//8
 int end_loc=find_text(",",line,0);// </span>
 
 
@@ -170,11 +232,11 @@ if (start_loc>0 && end_loc>0)
 for (int i=start_loc+3;i<end_loc;i++)
 {
 Serial.print(line[i]);
-me+=line[i];
+me+=message[i];
 
 }
 Serial.println("");
-me+=" c: ";
+me+=" ";/* =============== Start of message =============== */
 int start_loc2= find_text("id",line,end_loc+1)+6;// price.1
 
  //Serial.println(line);
@@ -187,7 +249,7 @@ for (int i=start_loc2+3;i<end_loc2;i++)
 {
  
 Serial.print(line[i]);
-me+=line[i];
+me+=message[i];//line
 }
 }
 
