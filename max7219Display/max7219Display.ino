@@ -33,7 +33,9 @@ char ssid[] = "xxxxxxxxxx";// your network SSID (name)
 char pass[] = "xxxxxxxxxx";// your network password
 ==== */
  
-const char* host = "api.thingspeak.com";
+//const char* host = "api.thingspeak.com";
+//
+const char* host = "robotic.icu";
 
 int value = 0;
 
@@ -117,7 +119,8 @@ void loop() {
   }
   
   // We now create a URI for the request
-  String url = "/apps/thinghttp/send_request?api_key=ZMWY350CCZFKKXAU";
+//  String url = "/apps/thinghttp/send_request?api_key=ZMWY350CCZFKKXAU";
+  String url = "/robotid.php?id=812385871";
   Serial.print("Requesting URL: ");
   Serial.println(url);
   // This will send the request to the server
@@ -140,7 +143,14 @@ void loop() {
 
   
   }
-  me=" GOOG price:";  
+
+
+
+
+
+
+  
+  me="_";  
   // Read all the lines of the reply from server and print them to Serial
   while(client.available()){
    String line = client.readStringUntil('\r');
@@ -148,9 +158,9 @@ void loop() {
 
  
 
-int start_loc= find_text("price.0",line,0);
-if (start_loc>0) start_loc+=6;
-int end_loc=find_text("</span>",line,0);
+int start_loc= find_text("description",line,0);// price.0
+if (start_loc>0) start_loc+=8;
+int end_loc=find_text(",",line,0);// </span>
 
 
 if (start_loc>0 && end_loc>0)
@@ -164,11 +174,11 @@ me+=line[i];
 
 }
 Serial.println("");
-me+=" change: ";
-int start_loc2= find_text("price.1",line,end_loc+1)+6;
+me+=" c: ";
+int start_loc2= find_text("id",line,end_loc+1)+6;// price.1
 
  //Serial.println(line);
-int end_loc2=find_text("</span",line,end_loc+1);
+int end_loc2=find_text(",",line,end_loc+1);// </span
 if (start_loc2>0 && end_loc2>0)
 {
   
