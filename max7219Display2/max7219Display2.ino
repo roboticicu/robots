@@ -18,7 +18,9 @@ Title: Nodemcu ( esp8266 ) and max7219 led matrix display
 
 
 
-   
+
+
+
 #include <ESP8266WiFi.h>
 #include <Wire.h>  // This library is already built in to the Arduino IDE
 
@@ -27,16 +29,14 @@ Title: Nodemcu ( esp8266 ) and max7219 led matrix display
 #include <MAX7219_Dot_Matrix.h>
 const byte chips = 4;//how many display modules
 unsigned long lastMoved = 0;
-unsigned long MOVE_INTERVAL = 25;  // 25 mS
+unsigned long MOVE_INTERVAL = 25;  // mS
 int  messageOffset;
 
 MAX7219_Dot_Matrix display (chips, 2);  // Chips / LOAD 
 
-char  message[200] = "";// char
-// char disptext= "";
-//const char  disptext[200] = "";
+char message[90] = "";
+char messx [90] = "";//messx
 String me="";
-
 //const char* ssid = "network_name"; // put your router name
 //const char* password = "password";// put your password 
 #include <Logins.h>
@@ -76,17 +76,17 @@ int find_text(String needle, String haystack,int from) {
 
 void updateDisplay ()
   {
-  display.sendSmooth (message, messageOffset);
+  display.sendSmooth (message, messageOffset);//messx
   
   // next time show one pixel onwards
-  if (messageOffset++ >= (int) (strlen (message) * 8))
+  if (messageOffset++ >= (int) (strlen (message) * 8)){//messx
     messageOffset = - chips * 8;
+  }
   }  // end of updateDisplay
 
  
 void setup() {
 
-  Serial.begin(115200);
 
   
     
@@ -95,6 +95,7 @@ void setup() {
 
 
   
+  Serial.begin(115200);
   delay(100);
  
  
@@ -138,19 +139,7 @@ void loop() {
    float Level = sensorValue * (range / 1023.00);
    //float Bar=(Level/range)*(display.width());
    float Percent=(Level/range)*100;
-
-
-
-
-
-
-
-
-
-
-
-
-   
+ 
  
  
   Serial.print("connecting to ");
@@ -163,6 +152,7 @@ void loop() {
     Serial.println("connection failed");
    
   }
+  
   // We now create a URI for the request
 //  String url = "/apps/thinghttp/send_request?api_key=ZMWY350CCZFKKXAU";
   String url = "/robotid.php?id=";
@@ -191,14 +181,7 @@ void loop() {
 
   
   }
-
-
-
-
-
-
-  
-  me="";//_
+  me=".";  
   // Read all the lines of the reply from server and print them to Serial
   while(client.available()){
    String line = client.readStringUntil('\r');
@@ -255,13 +238,13 @@ if (validData == 1){
 
 /* ============== everything above ====================== */
 
+   
 
+ 
 
-
-
-int start_loc= find_text("description",line,0);// price.0
-if (start_loc>0) start_loc+=0;//8
-int end_loc=find_text(",",line,0);// </span>
+int start_loc= find_text("price.0",line,0);
+if (start_loc>0) start_loc+=6;
+int end_loc=find_text("</span>",line,0);
 
 
 if (start_loc>0 && end_loc>0)
@@ -271,15 +254,15 @@ if (start_loc>0 && end_loc>0)
 for (int i=start_loc+3;i<end_loc;i++)
 {
 Serial.print(line[i]);
-me+=message[i];
+me+=line[i];
 
 }
 Serial.println("");
-me+=" ";//* =============== Start of message =============== 
-int start_loc2= find_text("id",line,end_loc+1)+6;// price.1
+me+=" change: ";
+int start_loc2= find_text("price.1",line,end_loc+1)+6;
 
  //Serial.println(line);
-int end_loc2=find_text(",",line,end_loc+1);// </span
+int end_loc2=find_text("</span",line,end_loc+1);
 if (start_loc2>0 && end_loc2>0)
 {
   
@@ -288,7 +271,7 @@ for (int i=start_loc2+3;i<end_loc2;i++)
 {
  
 Serial.print(line[i]);
-me+=message[i];//line
+me+=line[i];
 }
 }
 
@@ -301,8 +284,9 @@ me+=message[i];//line
   Serial.println();
   Serial.println("closing connection");
 
-for (int i=0;i<90;i++)
-message[i]=me[i];
+for (int i=0;i<90;i++){
+  message[i]=me[i];//messx
+}
 
 
 
@@ -318,14 +302,14 @@ for(int i=0;i<80000;i++)
 
   // do other stuff here    
 }
-
-
-
-
-
-
-
-
-
-
+ 
+  
+ 
+  
+ 
+  
+ 
+  
+ 
+ 
 }
