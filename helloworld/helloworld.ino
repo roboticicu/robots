@@ -7,7 +7,6 @@
  *
  * YouTube: youtube.com/watch?v=dzuMXUQwKx8
  * Title: Nodemcu ( esp8266 ) and max7219 led matrix display
- *f
  */
 int msglen = 0;
 
@@ -29,13 +28,21 @@ MAX7219_Dot_Matrix display(chips, 2);
  * @messx:         Message to display.
  * @messageOffset: Offset to display the message at
  * Returns the new offset for the next message to be displayed.
+ * 
+ * Updates the message with a smooth scroll, won't go faster than
+ * MOVE_INTERVAL even if you send another message.
  */ 
 int updateDisplay (char *messx, int messageOffset)
 {
+    static unsigned long lastMoved = 0;
+
+    if (millis() - lastMoved < MOVE_INTERVAL)
+        return;
     display.sendSmooth(messx, messageOffset);
     // next time show one pixel onwards
     if (messageOffset++ >= (int) (strlen (messx) * 8))
         messageOffset = - chips * 8;
+    lastMoved = millis();
     return messageOffset;
 }
 
@@ -47,12 +54,8 @@ void setup()
 void loop() {
     static char message[90] = "Hello World";
     static int messageOffset = 0;
-    static unsigned long lastMoved = 0;
 
     delay(1);
     /* update display if time is up */
-    if (millis() - lastMoved < MOVE_INTERVAL)
-        return;
     messageOffset = updateDisplay(message, messageOffset);
-    lastMoved = millis();
 }
