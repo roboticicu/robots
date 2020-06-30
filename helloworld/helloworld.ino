@@ -37,7 +37,7 @@ int updateDisplay (char *messx, int messageOffset)
     static unsigned long lastMoved = 0;
 
     if (millis() - lastMoved < MOVE_INTERVAL)
-        return;
+        return messageOffset;
     display.sendSmooth(messx, messageOffset);
     // next time show one pixel onwards
     if (messageOffset++ >= (int) (strlen (messx) * 8))
