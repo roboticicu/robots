@@ -47,7 +47,7 @@ void setup()
 void loop() {
     static char message[90] = "Hello World";
     static int messageOffset = 0;
-    static lastMove = 0;
+    static unsigned long lastMove = 0;
 
     delay(1);
     /* update display if time is up */
