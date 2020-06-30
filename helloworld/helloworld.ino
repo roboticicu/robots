@@ -18,7 +18,7 @@ int msglen = 0;
 
 /* Constants -- Global to this file */
 const unsigned long MOVE_INTERVAL = 25;  /* mS */
-const bytes chips = 4;
+const byte chips = 4;
 
 /* Global -- needs to be used in both setup and loop */
 MAX7219_Dot_Matrix display(chips, 2);
