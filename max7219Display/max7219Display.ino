@@ -34,7 +34,8 @@ MAX7219_Dot_Matrix display (chips, 2);  // Chips / LOAD
 
 char  message[200] = "";// char
 // char disptext= "";
-//const char  disptext[200] = "";
+//
+String disptext = "          Hi";
 String me="";
 
 //const char* ssid = "network_name"; // put your router name
@@ -240,24 +241,33 @@ const char * message = doc["message"]; // "Hello mom!"
 int validData = doc["bit"]; // ""
 
 
+/* ============== scroll loop ============== */
 if (validData == 1){
 //  disptext = "        ";
  // disptext += message;
  // message = disptext;
-  msglen = strlen(message);
-    //for (int i=0; i < 18; i++) {
-      //Serial.print(" ");
-    //}
-    for (int i=0; i < msglen; i++) {
+    for (int i=0; i < 8; i++) {
+      Serial.print(disptext[i]);
+    }
+
+    msglen = strlen(message)-1;
+    for (int i=-8; i < msglen; i++) {
       Serial.print(message[i]);
     }
 }
+/* ============== scroll loop ============== */
 
-/* ============== everything above ====================== */
+/* === timeout routine ===== 
+ int waittime = 0; // 0 for no delay (put this line at top)
+if(millis()>timeout) {
+   //   Fetch new message 
 
 
+   int timeout=millis()+waittime;
+}
+*/
 
-
+// ============== removed section below ===================
 
 int start_loc= find_text("description",line,0);// price.0
 if (start_loc>0) start_loc+=0;//8
@@ -276,7 +286,7 @@ me+=message[i];
 }
 Serial.println("");
 me+=" ";//* =============== Start of message =============== 
-int start_loc2= find_text("id",line,end_loc+1)+6;// price.1
+int start_loc2= find_text("><",line,end_loc+1)+6;//id price.1
 
  //Serial.println(line);
 int end_loc2=find_text(",",line,end_loc+1);// </span
@@ -294,9 +304,18 @@ me+=message[i];//line
 
 
 }
+// ==== remove section above ===============
+
+
+/* ============== everything above ====================== */
+
+
+
+
+
     
  //   Serial.println(line);
-  }
+  }// client availible
   
   Serial.println();
   Serial.println("closing connection");
