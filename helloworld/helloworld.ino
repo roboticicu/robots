@@ -51,7 +51,7 @@ void loop() {
 
     delay(1);
     /* update display if time is up */
-    if (millis() - lastMoved < MOVE_INTERNAL)
+    if (millis() - lastMoved < MOVE_INTERVAL)
         return;
     messageOffset = updateDisplay(message, messageOffset);
     lastMoved = millis();
