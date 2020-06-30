@@ -53,7 +53,6 @@ void loop() {
     /* update display if time is up */
     if (millis() - lastMoved < MOVE_INTERNAL)
         return;
-    messageOffet = updateDisplay(message, messageOffset);
-    lastMoved = millis ();
-    /* do other stuff here */
+    messageOffset = updateDisplay(message, messageOffset);
+    lastMoved = millis();
 }
