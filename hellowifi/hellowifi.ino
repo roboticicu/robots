@@ -1,5 +1,7 @@
 /*
- * Name: max7219Display
+ * Name: hellowifi
+ * Variant of: max7219Display
+ *
  * Creator: Marco Arduino channel
  * Date:    35,175 views•Jan 8, 2017
  *
@@ -11,17 +13,18 @@
 #include <MAX7219_Dot_Matrix.h>
 #include <string.h>
 
-#include <ESP8266Wifi.h>
+#include <ESP8266WiFi.h>
 #include <Logins.h>
 #include <ArduinoJson.h>
 
 /* Constants -- Global to this file */
 const unsigned long MOVE_INTERVAL = 25;  /* mS */
-const unsigned long MESSAGE_INTERVAL = 125; /* ms */
+const unsigned long MESSAGE_INTERVAL = 1000; /* 1 sec */
 const byte chips = 4;
 
 /* Global -- needs to be used in both setup and loop */
 MAX7219_Dot_Matrix display(chips, 2);
+int deviceId = 849081125;
 
 /*
  * updateDisplay: updates the max7219 display with message at new position
@@ -67,18 +70,23 @@ void setup()
     Serial.println(WiFi.localIP());
 }
 
-char *getMessageFromClient(char *oldMess)
+char *getMessageFromClient(char *message)
 {
     WiFiClient client;
     const char *host = "robotic.icu";
     const int httpPort = 80;
     static unsigned long lastMsg = 0;
-    String url = "/robotid.php?id="+deviceId;
+    const size_t capacity;
+    int c_len;
+    String url;
     String line;
+    char *newMessage;
+
 
     if (millis() - lastMsg < MESSAGE_INTERVAL)
-        return oldMess;
-    lastMoved = millis();
+        return message;
+    url = "/robotid.php?id="+deviceId;
+    lastMsg = millis();
     Serial.print("connecting to ");
     Serial.println(host);
 
@@ -92,31 +100,29 @@ char *getMessageFromClient(char *oldMess)
                  "Host: " + host + "\r\n" + 
                  "Connection: close\r\n\r\n");
     while (client.connected()) {
-        String line;
-        const size_t capacity = JSON_OBJECT_SIZE(22) + 1024;
-        char *newMessage;
-        int validData;
-        
         line = client.readStringUntil('\r');
         if (line.startsWith("Content-Length: ")) {
             c_len = line.substring(15).toInt();
         }
-        if (line == '\r')
+        if (line == "\r")
             break;
     }
     if (!client.connected())
         return NULL;
     line = client.readStringUntil('\r');
+    /* Got package so make sure we are disconnected and we don't leave broken headers */
     client.stop();
-    DynamicJsonDocument doc(capacity);
+    /* 22 is calculated by the amount of extra spaces in the JSON */
+    capacity = JSON_OBJECT_SIZE(22) + c_len;
+    DynamicJsonDocument doc(capacity); /* <==== current error line =========== */
     deserializeJson(doc, line);
-    message = doc["message"];
+    newMessage = doc["message"];
     validData = doc["bit"];
 
     if (!validData)
         return NULL;
-    lastMoved = millis();
-    return message;
+    lastMsg = millis();
+    return newMessage;
 }
 
 void loop() {
@@ -124,9 +130,10 @@ void loop() {
     static int messageOffset = 0;
     static char message[250] = NULL;
     char *newMessage;
-    delay(1);
 
-    newMessage = getMessageFromClient();
+    delay(1);
+    /* Get new message if time is up */
+    newMessage = getMessageFromClient(message);
     if (newMessage && (newMessage != message) {
         strncpy(message, newMessage, strlen(newMessage));
         messageOffset = 0;
