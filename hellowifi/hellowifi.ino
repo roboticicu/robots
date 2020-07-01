@@ -8,12 +8,8 @@
  * YouTube: youtube.com/watch?v=dzuMXUQwKx8
  * Title: Nodemcu ( esp8266 ) and max7219 led matrix display
  */
-int msglen = 0;
-
 #include <MAX7219_Dot_Matrix.h>
 #include <string.h>
-
-#define MAX(a, b) (( a < b ) ? a : b ) 
 
 /* Constants -- Global to this file */
 const unsigned long MOVE_INTERVAL = 25;  /* mS */
