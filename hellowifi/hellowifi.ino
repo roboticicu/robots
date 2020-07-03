@@ -76,7 +76,6 @@ char *getMessageFromClient(char *message)
     const char *host = "robotic.icu";
     const int httpPort = 80;
     static unsigned long lastMsg = 0;
-    const size_t capacity;
     int c_len;
     String url;
     String line;
@@ -113,7 +112,7 @@ char *getMessageFromClient(char *message)
     /* Got package so make sure we are disconnected and we don't leave broken headers */
     client.stop();
     /* 22 is calculated by the amount of extra spaces in the JSON */
-    capacity = JSON_OBJECT_SIZE(22) + c_len;
+    const size_t capacity = JSON_OBJECT_SIZE(22) + c_len;
     DynamicJsonDocument doc(capacity); /* <==== current error line =========== */
     deserializeJson(doc, line);
     newMessage = doc["message"];
