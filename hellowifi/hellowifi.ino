@@ -113,10 +113,10 @@ char *getMessageFromClient(char *message)
     client.stop();
     /* 22 is calculated by the amount of extra spaces in the JSON */
     const size_t capacity = JSON_OBJECT_SIZE(22) + c_len;
-    DynamicJsonDocument doc(capacity); /* <==== current error line =========== */
+    DynamicJsonDocument doc(capacity); 
     deserializeJson(doc, line);
     newMessage = doc["message"];
-    validData = doc["bit"];
+    int validData = doc["bit"];// Brian changed
 
     if (!validData)
         return NULL;
@@ -127,7 +127,7 @@ char *getMessageFromClient(char *message)
 void loop() {
     static char defaultMessage[20] = "no connection";
     static int messageOffset = 0;
-    static char message[250] = NULL;
+    static char message[250] = NULL;   /* <==== current error line =========== */
     char *newMessage;
 
     delay(1);
@@ -140,3 +140,42 @@ void loop() {
     /* update display if time is up */
     messageOffset = updateDisplay(message, messageOffset);
 }
+/* ======== error report ================
+
+Arduino: 1.8.12 (Linux), Board: "NodeMCU 1.0 (ESP-12E Module), 80 MHz, Flash, Disabled (new can abort), All SSL ciphers (most compatible), 4MB (FS:2MB OTA:~1019KB), 2, v2 Lower Memory, Disabled, None, Only Sketch, 115200"
+
+In file included from /home/brian/.arduino15/packages/esp8266/hardware/esp8266/2.6.3/tools/sdk/libc/xtensa-lx106-elf/include/../include/time.h:15:0,
+                 from /home/brian/.arduino15/packages/esp8266/hardware/esp8266/2.6.3/cores/esp8266/HardwareSerial.h:31,
+                 from /home/brian/.arduino15/packages/esp8266/hardware/esp8266/2.6.3/cores/esp8266/Arduino.h:244,
+                 from sketch/hellowifi.ino.cpp:1:
+/home/brian/Arduino/hellowifi/hellowifi.ino: In function 'void loop()':
+hellowifi:130:32: error: array must be initialized with a brace-enclosed initializer
+     static char message[250] = NULL;  
+                                ^
+hellowifi:136:47: error: expected ')' before '{' token
+     if (newMessage && (newMessage != message) {
+                                               ^
+In file included from /home/brian/Arduino/libraries/ArduinoJson/src/ArduinoJson/Operators/VariantOr.hpp:9:0,
+                 from /home/brian/Arduino/libraries/ArduinoJson/src/ArduinoJson/Operators/VariantOperators.hpp:8,
+                 from /home/brian/Arduino/libraries/ArduinoJson/src/ArduinoJson/Variant/VariantRef.hpp:12,
+                 from /home/brian/Arduino/libraries/ArduinoJson/src/ArduinoJson/Array/ArrayIterator.hpp:8,
+                 from /home/brian/Arduino/libraries/ArduinoJson/src/ArduinoJson/Array/ArrayRef.hpp:8,
+                 from /home/brian/Arduino/libraries/ArduinoJson/src/ArduinoJson.hpp:17,
+                 from /home/brian/Arduino/libraries/ArduinoJson/src/ArduinoJson.h:9,
+                 from /home/brian/Arduino/hellowifi/hellowifi.ino:18:
+/home/brian/Arduino/libraries/ArduinoJson/src/ArduinoJson/Variant/VariantAs.hpp: In instantiation of 'T ArduinoJson6152_0000010::variantAs(ArduinoJson6152_0000010::VariantData*, ArduinoJson6152_0000010::MemoryPool*) [with T = char*]':
+/home/brian/Arduino/libraries/ArduinoJson/src/ArduinoJson/Variant/VariantRef.hpp:252:37:   required from 'ArduinoJson6152_0000010::VariantRef::operator T() const [with T = char*]'
+/home/brian/Arduino/libraries/ArduinoJson/src/ArduinoJson/Object/MemberProxy.hpp:80:30:   required from 'ArduinoJson6152_0000010::MemberProxy<TParent, TStringRef>::operator T() const [with T = char*; TObject = ArduinoJson6152_0000010::JsonDocument&; TStringRef = const char*]'
+/home/brian/Arduino/hellowifi/hellowifi.ino:118:16:   required from here
+/home/brian/Arduino/libraries/ArduinoJson/src/ArduinoJson/Variant/VariantAs.hpp:93:27: error: invalid conversion from 'ArduinoJson6152_0000010::enable_if<true, const char*>::type {aka const char*}' to 'char*' [-fpermissive]
+   return variantAs<T>(data);
+                           ^
+exit status 1
+array must be initialized with a brace-enclosed initializer
+
+This report would have more information with
+"Show verbose output during compilation"
+option enabled in File -> Preferences.
+
+
+*/
