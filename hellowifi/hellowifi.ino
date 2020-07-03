@@ -20,6 +20,7 @@
 /* Constants -- Global to this file */
 const unsigned long MOVE_INTERVAL = 25;  /* mS */
 const unsigned long MESSAGE_INTERVAL = 1000; /* 1 sec */
+const int MESSAGE_LENGTH = 250;
 const byte chips = 4;
 
 /* Global -- needs to be used in both setup and loop */
@@ -70,7 +71,7 @@ void setup()
     Serial.println(WiFi.localIP());
 }
 
-char *getMessageFromClient(char *message)
+int getMessageFromClient(char *message)
 {
     WiFiClient client;
     const char *host = "robotic.icu";
@@ -79,18 +80,17 @@ char *getMessageFromClient(char *message)
     int c_len;
     String url;
     String line;
-    char *newMessage;
 
 
     if (millis() - lastMsg < MESSAGE_INTERVAL)
-        return message;
+        return 0;
     url = "/robotid.php?id="+deviceId;
     lastMsg = millis();
     Serial.print("connecting to ");
     Serial.println(host);
 
     if (!client.connect(host, httpPort))
-        return NULL;
+        return -1;
 
     Serial.print("Requesting URL: ");
     Serial.println(url);
@@ -107,7 +107,7 @@ char *getMessageFromClient(char *message)
             break;
     }
     if (!client.connected())
-        return NULL;
+        return -1;
     line = client.readStringUntil('\r');
     /* Got package so make sure we are disconnected and we don't leave broken headers */
     client.stop();
@@ -115,28 +115,25 @@ char *getMessageFromClient(char *message)
     const size_t capacity = JSON_OBJECT_SIZE(22) + c_len;
     DynamicJsonDocument doc(capacity); 
     deserializeJson(doc, line);
-    newMessage = doc["message"];
     int validData = doc["bit"];// Brian changed
-
     if (!validData)
-        return NULL;
+        return -1;
+    if (strncmp(message, doc["message"], MESSAGE_LENGTH) == 0)
+        return 0;
+    strncpy(message, doc["message"], MESSAGE_LENGTH);
     lastMsg = millis();
-    return newMessage;
+    return strlen(message);
 }
 
 void loop() {
     static char defaultMessage[20] = "no connection";
     static int messageOffset = 0;
-    static char message[250] = "";   /* <==== current error line =========== */
-    char *newMessage;
+    static char message[MESSAGE_LENGTH] = "";
 
     delay(1);
-    /* Get new message if time is up */
-    newMessage = getMessageFromClient(message);
-    if (newMessage && (newMessage != message)) {
-        strncpy(message, newMessage, strlen(newMessage));
+    /* If getMessageFromClient returns a positive number a new message was gotten, reset the offset */
+    if (getMessageFromClient(message) > 0)
         messageOffset = 0;
-    }
     /* update display if time is up */
     messageOffset = updateDisplay(message, messageOffset);
 }
