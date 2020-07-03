@@ -127,13 +127,13 @@ char *getMessageFromClient(char *message)
 void loop() {
     static char defaultMessage[20] = "no connection";
     static int messageOffset = 0;
-    static char message[250] = NULL;   /* <==== current error line =========== */
+    static char message[250] = "";   /* <==== current error line =========== */
     char *newMessage;
 
     delay(1);
     /* Get new message if time is up */
     newMessage = getMessageFromClient(message);
-    if (newMessage && (newMessage != message) {
+    if (newMessage && (newMessage != message)) {
         strncpy(message, newMessage, strlen(newMessage));
         messageOffset = 0;
     }
