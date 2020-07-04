@@ -78,13 +78,12 @@ int getMessageFromClient(char *message)
     const int httpPort = 80;
     static unsigned long lastMsg = 0;
     int c_len;
-    String url;
+    String url = "/robotid.php?id="+deviceId;
     String line = "";
 
 
     if (millis() - lastMsg < MESSAGE_INTERVAL)
         return 0;
-    url = "/robotid.php?id="+deviceId;
     lastMsg = millis();
     Serial.print("connecting to ");
     Serial.println(host);
