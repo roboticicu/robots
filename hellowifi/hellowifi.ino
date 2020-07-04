@@ -128,7 +128,7 @@ int getMessageFromClient(char *message)
     const size_t capacity = JSON_OBJECT_SIZE(22) + 1024;
     DynamicJsonDocument doc(capacity); 
     deserializeJson(doc, line);
-    const String newMessageStr = doc["message"]; // "Hello mom!"
+    const String newMessageStr = String(doc["message"]); // "Hello mom!"
     const int validData = doc["bit"];// Brian changed
     if (!validData) {
         Serial.println("Invalid Data Read: " + newMessageStr);
