@@ -26,6 +26,7 @@ const byte chips = 4;
 /* Global -- needs to be used in both setup and loop */
 MAX7219_Dot_Matrix display(chips, 2);
 int deviceId = 849081125;
+int batLevel = 0;
 
 /*
  * updateDisplay: updates the max7219 display with message at new position
@@ -73,12 +74,16 @@ void setup()
 
 int getMessageFromClient(char *message)
 {
+    float batLevel = analogRead(A0);
     WiFiClient client;
     const char *host = "robotic.icu";
     const int httpPort = 80;
     static unsigned long lastMsg = 0;
     int c_len;
-    String url = "/robotid.php?id="+deviceId;
+    String url = "/robotid.php?id=";
+    url+=deviceId;
+    url+="&bat=";
+    url+=batLevel;
     String line = "";
 
 
@@ -89,7 +94,7 @@ int getMessageFromClient(char *message)
     Serial.println(host);
 
     if (!client.connect(host, httpPort)) {
-        Serial.println("Failed to connect host: " + host);
+//        Serial.println("Failed to connect host: "+host);// ==== error ========
         return -1;
     }
     Serial.print("Requesting URL: [");
@@ -108,9 +113,9 @@ int getMessageFromClient(char *message)
         if (line == "\r")
             break;
     }
-    Serial.println("DAK -- Line is [ " + line + "]")
+    Serial.println("DAK -- Line is [ " + line + "]");
     if (!client.connected()) {
-        Serial.println("Client disconnected before close.");
+     //   Serial.println("Client disconnected before close.");// ==== error ========
         return -1;
     }
     line = client.readStringUntil('\r');
@@ -132,7 +137,11 @@ int getMessageFromClient(char *message)
     }
     strncpy(message, doc["message"], MESSAGE_LENGTH);
     lastMsg = millis();
-    Serial.println("New message is: [" + message + "]");
+   //  
+   Serial.println("New message is: [" + String(message)  + "]");// ==== error ========
+   
+   //Serial.print("message: ");
+   //Serial.println(message);
     return strlen(message);
 }
 
@@ -140,6 +149,7 @@ void loop() {
     static char defaultMessage[20] = "no connection";
     static int messageOffset = 0;
     static char message[MESSAGE_LENGTH] = "";
+    int batLevel= 3.3;
 
     delay(1);
     /* If getMessageFromClient returns a positive number a new message was gotten, reset the offset */
