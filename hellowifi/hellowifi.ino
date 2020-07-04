@@ -79,7 +79,7 @@ int getMessageFromClient(char *message)
     static unsigned long lastMsg = 0;
     int c_len;
     String url;
-    String line;
+    String line = "";
 
 
     if (millis() - lastMsg < MESSAGE_INTERVAL)
@@ -89,11 +89,14 @@ int getMessageFromClient(char *message)
     Serial.print("connecting to ");
     Serial.println(host);
 
-    if (!client.connect(host, httpPort))
+    if (!client.connect(host, httpPort)) {
+        Serial.println("Failed to connect host: " + host);
         return -1;
+    }
+    Serial.print("Requesting URL: [");
+    Serial.print(url);
+    Serial.println("]");
 
-    Serial.print("Requesting URL: ");
-    Serial.println(url);
     // This will send the request to the server
     client.print(String("GET ") + url + " HTTP/1.0\r\n" +
                  "Host: " + host + "\r\n" + 
@@ -106,22 +109,31 @@ int getMessageFromClient(char *message)
         if (line == "\r")
             break;
     }
-    if (!client.connected())
+    Serial.println("DAK -- Line is [ " + line + "]")
+    if (!client.connected()) {
+        Serial.println("Client disconnected before close.");
         return -1;
+    }
     line = client.readStringUntil('\r');
     /* Got package so make sure we are disconnected and we don't leave broken headers */
+    Serial.println("DAK -- line is now : [" + line + "]");
     client.stop();
     /* 22 is calculated by the amount of extra spaces in the JSON */
     const size_t capacity = JSON_OBJECT_SIZE(22) + c_len;
     DynamicJsonDocument doc(capacity); 
     deserializeJson(doc, line);
     int validData = doc["bit"];// Brian changed
-    if (!validData)
+    if (!validData) {
+        Serial.println("Invalid Data Read");
         return -1;
-    if (strncmp(message, doc["message"], MESSAGE_LENGTH) == 0)
+    }
+    if (strncmp(message, doc["message"], MESSAGE_LENGTH) == 0) {
+        Serial.println("Messages are equal");
         return 0;
+    }
     strncpy(message, doc["message"], MESSAGE_LENGTH);
     lastMsg = millis();
+    Serial.println("New message is: [" + message + "]");
     return strlen(message);
 }
 
