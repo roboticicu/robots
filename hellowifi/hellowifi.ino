@@ -114,28 +114,36 @@ int getMessageFromClient(char *message)
             break;
     }
     Serial.println("DAK -- Line is [ " + line + "]");
-    if (!client.connected()) {
-     //   Serial.println("Client disconnected before close.");// ==== error ========
-        return -1;
-    }
-    line = client.readStringUntil('\r');
-    /* Got package so make sure we are disconnected and we don't leave broken headers */
-    Serial.println("DAK -- line is now : [" + line + "]");
+   // if (!client.connected()) {
+     //      Serial.println("Client disconnected before close.");// ==== error ========
+   //     return -1;
+   // }
+   // line = client.readStringUntil('\r');
+  //  /* Got package so make sure we are disconnected and we don't leave broken headers */
+   // Serial.println("DAK -- line is now : [" + line + "]");
     client.stop();
     /* 22 is calculated by the amount of extra spaces in the JSON */
-    const size_t capacity = JSON_OBJECT_SIZE(22) + c_len;
+    //const size_t capacity = JSON_OBJECT_SIZE(22) + c_len;
+    const size_t capacity = JSON_OBJECT_SIZE(22) + 1024;
     DynamicJsonDocument doc(capacity); 
     deserializeJson(doc, line);
+//const char * message = doc["message"]; // "Hello mom!"
     int validData = doc["bit"];// Brian changed
     if (!validData) {
         Serial.println("Invalid Data Read");
         return -1;
     }
+    
+    if (validData) {
+     String message = doc["message"];
+      Serial.print("\nBDT: ");
+      Serial.println(message);
+    }
     if (strncmp(message, doc["message"], MESSAGE_LENGTH) == 0) {
         Serial.println("Messages are equal");
         return 0;
     }
-    strncpy(message, doc["message"], MESSAGE_LENGTH);
+    //    strncpy(message, doc["message"], MESSAGE_LENGTH);
     lastMsg = millis();
    //  
    Serial.println("New message is: [" + String(message)  + "]");// ==== error ========
