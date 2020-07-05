@@ -75,7 +75,13 @@ void setup()
 int getMessageFromClient(char *message)
 {
     String oldMessageStr = String(message);
-    float batLevel = analogRead(A0);
+
+    int responseTime = millis();// <=== fix this =========
+    
+    int bat = analogRead(A0);             // ===== Keep this =======
+    float batLevel = (map(bat, 0, 1023, 0, 5000.000))/1;// ===== Keep this =======
+
+    
     WiFiClient client;
     const char *host = "robotic.icu";
     const int httpPort = 80;
@@ -85,22 +91,24 @@ int getMessageFromClient(char *message)
     url+=deviceId;
     url+="&bat=";
     url+=batLevel;
+    url+="&time=";
+    url+=responseTime;
     String line = "";
 
 
     if (millis() - lastMsg < MESSAGE_INTERVAL)
         return 0;
     lastMsg = millis();
-    Serial.print("connecting to ");
-    Serial.println(host);
+//    Serial.print("connecting to ");
+//    Serial.println(host);
 
     if (!client.connect(host, httpPort)) {
 //        Serial.println("Failed to connect host: "+host);// ==== error ========
         return -1;
     }
-    Serial.print("Requesting URL: [");
-    Serial.print(url);
-    Serial.println("]");
+    //Serial.print("Requesting URL: [");
+    //Serial.print(url);
+    //Serial.println("]");
 
     // This will send the request to the server
     client.print(String("GET ") + url + " HTTP/1.0\r\n" +
@@ -128,24 +136,25 @@ int getMessageFromClient(char *message)
     const size_t capacity = JSON_OBJECT_SIZE(22) + 1024;
     DynamicJsonDocument doc(capacity); 
     deserializeJson(doc, line);
-    const String newMessageStr = String(doc["message"]); // "Hello mom!"
+    //const String newMessageStr = String(doc["message"]); // "Hello mom!"
+    const String newMessageStr = doc["message"]; // "Hello mom!"
     const int validData = doc["bit"];// Brian changed
     if (!validData) {
         Serial.println("Invalid Data Read: " + newMessageStr);
         return -1;
     }
     
-    if (validData) {
-      Serial.print("\nBDT: ");
-      Serial.println(newMessageStr);
-    }
+    //if (validData) {
+    //  Serial.print("\nBDT: ");
+    //  Serial.println(newMessageStr);
+   // }
     if (newMessageStr.equals(oldMessageStr)) {
         Serial.println("Messages are equal");
         return 0;
     }
     newMessageStr.toCharArray(message, MESSAGE_LENGTH);
     lastMsg = millis();  
-    Serial.println("New message is: [" + String(message)  + "]");// ==== error ========
+   // Serial.println("New message is: [" + String(message)  + "]");// ==== error ========
    
    //Serial.print("message: ");
    //Serial.println(message);
