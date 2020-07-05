@@ -98,7 +98,7 @@ int getMessageFromClient(char *message)
 
     if (millis() - lastMsg < MESSAGE_INTERVAL)
         return 0;
-    lastMsg = millis();
+//    lastMsg = millis();
 //    Serial.print("connecting to ");
 //    Serial.println(host);
 
@@ -114,8 +114,10 @@ int getMessageFromClient(char *message)
     client.print(String("GET ") + url + " HTTP/1.0\r\n" +
                  "Host: " + host + "\r\n" + 
                  "Connection: close\r\n\r\n");
+                 client.stop();
     while (client.connected()) {
-        line = client.readStringUntil('\r');
+        line = client.readStringUntil('\r');//r
+        //Serial.println(line);
         if (line.startsWith("Content-Length: ")) {
             c_len = line.substring(15).toInt();
         }
@@ -127,7 +129,7 @@ int getMessageFromClient(char *message)
      //      Serial.println("Client disconnected before close.");// ==== error ========
    //     return -1;
    // }
-   // line = client.readStringUntil('\r');
+  //  line = client.readStringUntil('\r');
   //  /* Got package so make sure we are disconnected and we don't leave broken headers */
    // Serial.println("DAK -- line is now : [" + line + "]");
     client.stop();
@@ -149,7 +151,7 @@ int getMessageFromClient(char *message)
     //  Serial.println(newMessageStr);
    // }
     if (newMessageStr.equals(oldMessageStr)) {
-        Serial.println("Messages are equal");
+//=======        Serial.println("Messages are equal");
         return 0;
     }
     newMessageStr.toCharArray(message, MESSAGE_LENGTH);
@@ -164,13 +166,17 @@ int getMessageFromClient(char *message)
 void loop() {
     static char defaultMessage[20] = "no connection";
     static int messageOffset = 0;
-    static char message[MESSAGE_LENGTH] = "";
+    //
+    static char message[MESSAGE_LENGTH] = "Four score and a lot of years ago..";
+    //static char message[MESSAGE_LENGTH] = "";
     int batLevel= 3.3;
 
     delay(1);
     /* If getMessageFromClient returns a positive number a new message was gotten, reset the offset */
-    if (getMessageFromClient(message) > 0)
-        messageOffset = 0;
+   if (getMessageFromClient(message) > 0)
+       messageOffset = 0;
+     //   const char * message= "For score and a lot of years ago..";
+
     /* update display if time is up */
     messageOffset = updateDisplay(message, messageOffset);
 }
