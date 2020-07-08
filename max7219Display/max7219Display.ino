@@ -55,9 +55,10 @@ char pass[] = "xxxxxxxxxx";// your network password
 
 #include <ArduinoJson.h>
 
-  int range = 18;
-  float batLev = analogRead(A0);
+  int range = 5;
   //  int Level = analogRead(A0);
+  //float batLev = analogRead(A0);
+  //float batLev = 47.02;
 
 
 
@@ -135,7 +136,7 @@ void setup() {
  
 void loop() {
   // read the input on analog pin 0:
-  int sensorValue = analogRead(A0);
+  float sensorValue = analogRead(A0);
 
   /* Convert the analog reading 
      (which goes from 0 - 1023)
@@ -145,10 +146,12 @@ void loop() {
  // float Level = (map(bat, 0, 1023, 0, 5000))/1;
    float Level = sensorValue * (range / 1023.00);
    //float Bar=(Level/range)*(display.width());
-   float Percent=(Level/range)*100;
+   //float Percent=(Level/range)*100;
+   float batLev=(Level/range)*100;
 
 
 
+     char ipAddress[20];
 
 
 
@@ -177,6 +180,9 @@ void loop() {
   url += deviceId;
   url += "&batLevel=";
   url += batLev;
+
+
+  
   Serial.print("Requesting URL: ");
   Serial.println(url);
   // This will send the request to the server
@@ -254,7 +260,7 @@ if (validData == 1){
  // disptext += message;
  // message = disptext;
     for (int i=0; i < 8; i++) {
-      Serial.print(disptext[i]);
+      //Serial.print(disptext[i]);
     }
 
     if (P8){
@@ -262,12 +268,15 @@ if (validData == 1){
     }
 
     if (P7){
-      me = "         IP# ";
      //String messageString[20] =  WiFi.localIP().toString();// === does not work ===
-     char ipAddress[20]; 
      //WiFi.localIP().ToCharArray(ipAddress, 20);// === error === David ====
      WiFi.localIP().toString().toCharArray(ipAddress, 20);
+      // me = "         IP# "+ipAddress;
+    // ipAddress= me;
 
+    // message = "        P7 pressed";
+
+//Serial.print(ipAddress);
 
 
     }
@@ -276,9 +285,10 @@ if (validData == 1){
     for (int i=0; i < msglen; i++) {
       if (P7){
         //Serial.print(WiFi.localIP()[i]);
-        Serial.print(ipAddress[i]);
+//
+Serial.print(ipAddress[i]);
       }else{
-        Serial.print(message[i]);
+       // Serial.print(message[i]);
       }
     }
 }
@@ -309,37 +319,35 @@ if(millis()>timeout) {
 
 // ============== removed section below ===================
 
-int start_loc= find_text("description",line,0);// price.0
+int start_loc= find_text("message",line,0);// price.0
 if (start_loc>0) start_loc+=0;//8
 int end_loc=find_text(",",line,0);// </span>
 
 
 if (start_loc>0 && end_loc>0)
 {
-  Serial.println("price:  ");
+    //Serial.println("price:  ");
+    for (int i=start_loc+3;i<end_loc;i++){
+    //Serial.print(line[i]);
+    me+=message[i];
+    }
+    //
+    Serial.println("");
 
-for (int i=start_loc+3;i<end_loc;i++)
-{
-Serial.print(line[i]);
-me+=message[i];
-
-}
-Serial.println("");
-me+=" ";//* =============== Start of message =============== 
-int start_loc2= find_text("><",line,end_loc+1)+6;//id price.1
+    me+=" ";//* =============== Start of message =============== 
+int start_loc2= find_text("><",line,end_loc+1)+6;// ><  id price.1
 
  //Serial.println(line);
 int end_loc2=find_text(",",line,end_loc+1);// </span
 if (start_loc2>0 && end_loc2>0)
 {
   
-  Serial.println("views:");
-for (int i=start_loc2+3;i<end_loc2;i++)
-{
- 
-Serial.print(line[i]);
+//  Serial.println("views:");
+for (int i=start_loc2+3;i<end_loc2;i++){
+//Serial.print(line[i]);
 me+=message[i];//line
 }
+
 }
 
 
@@ -367,7 +375,7 @@ message[i]=me[i];
 
 for(int i=0;i<40000;i++)
 {
-  delay(1);
+  delay(2);
    // update display if time is up
   if (millis () - lastMoved >= MOVE_INTERVAL)
     {
