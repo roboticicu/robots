@@ -265,13 +265,15 @@ if (validData == 1){
       me = "         IP# ";
      //String messageString[20] =  WiFi.localIP().toString();// === does not work ===
      char ipAddress[20]; 
-     WiFi.localIP().ToCharArray(ipAddress, 20);// === error === David ====
+     //WiFi.localIP().ToCharArray(ipAddress, 20);// === error === David ====
+     WiFi.localIP().toString().toCharArray(ipAddress, 20);
+
 
 
     }
 
     msglen = strlen(message)-1;
-    for (int i=-8; i < msglen; i++) {
+    for (int i=0; i < msglen; i++) {
       if (P7){
         //Serial.print(WiFi.localIP()[i]);
         Serial.print(ipAddress[i]);
