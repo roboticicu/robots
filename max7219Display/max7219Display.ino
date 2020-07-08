@@ -13,8 +13,15 @@ Title: Nodemcu ( esp8266 ) and max7219 led matrix display
    /* 849081125 812385871
 
 
+B vewy quiet,Im hunting wabbits
+
+
+
+
+
    */
    int msglen = 0;
+   int baud = 115200;
 
 
 
@@ -87,7 +94,7 @@ void updateDisplay ()
  
 void setup() {
 
-  Serial.begin(115200);
+  Serial.begin(baud);
 
   
     
@@ -243,18 +250,49 @@ int validData = doc["bit"]; // ""
 
 /* ============== scroll loop ============== */
 if (validData == 1){
-//  disptext = "        ";
+  //  disptext = "        ";
  // disptext += message;
  // message = disptext;
     for (int i=0; i < 8; i++) {
       Serial.print(disptext[i]);
     }
 
+    if (P8){
+      message = "        ..no connection..";
+    }
+
+    if (P7){
+      me = "         IP# ";
+     //String messageString[20] =  WiFi.localIP().toString();// === does not work ===
+     char ipAddress[20]; 
+     WiFi.localIP().ToCharArray(ipAddress, 20);// === error === David ====
+
+
+    }
+
     msglen = strlen(message)-1;
     for (int i=-8; i < msglen; i++) {
-      Serial.print(message[i]);
+      if (P7){
+        //Serial.print(WiFi.localIP()[i]);
+        Serial.print(ipAddress[i]);
+      }else{
+        Serial.print(message[i]);
+      }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ============== scroll loop ============== */
 
 /* === timeout routine ===== 
@@ -325,7 +363,7 @@ message[i]=me[i];
 
 
 
-for(int i=0;i<80000;i++)
+for(int i=0;i<40000;i++)
 {
   delay(1);
    // update display if time is up
