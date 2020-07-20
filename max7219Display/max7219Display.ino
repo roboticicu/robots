@@ -8,17 +8,24 @@ SourceCode: pastebin.com/raw/V1Qja7Dw
 YouTube: youtube.com/watch?v=dzuMXUQwKx8
 Title: Nodemcu ( esp8266 ) and max7219 led matrix display
 
+PINS
+MAX7219 esp8266
+   CS     D4
+   CLK    D5
+   DIN    D7
+
 */
-   int deviceId = 849081125;
-   /* 849081125 812385871
+   int deviceId = 519994052;
+/* 
+849081125 519994052 383085317 477383611 240527013 
+934661423 907864801 168036030 184884263
+876975430 992438994 866880631 611452822 286531102 
+112518130 368141751 368141751 770623542 749236437 
+513739377 471922699 233683192 417658552 
+849081125 812385871
 
 
 B vewy quiet,Im hunting wabbits
-
-
-
-
-
    */
    int msglen = 0;
    int baud = 115200;
@@ -39,7 +46,7 @@ int  messageOffset;
 
 MAX7219_Dot_Matrix display (chips, 2);  // Chips / LOAD 
 
-char  message[200] = "";// char
+char  message[260] = "";// char
 // char disptext= "";
 //
 String disptext = "          Hi";
@@ -196,10 +203,10 @@ void loop() {
 
 
   // update display if time is up
-  if (millis () - lastMoved >= MOVE_INTERVAL)
+  if (millis() - lastMoved >= MOVE_INTERVAL)
     {
-    updateDisplay ();
-    lastMoved = millis ();
+    updateDisplay();
+    lastMoved = millis();
     }
 
 
@@ -319,7 +326,7 @@ if(millis()>timeout) {
 
 // ============== removed section below ===================
 
-int start_loc= find_text("message",line,0);// price.0
+int start_loc= find_text("description",line,0);// price.0
 if (start_loc>0) start_loc+=0;//8
 int end_loc=find_text(",",line,0);// </span>
 
@@ -328,14 +335,15 @@ if (start_loc>0 && end_loc>0)
 {
     //Serial.println("price:  ");
     for (int i=start_loc+3;i<end_loc;i++){
-    //Serial.print(line[i]);
+    //
+    Serial.print(line[i]);
     me+=message[i];
     }
     //
     Serial.println("");
 
     me+=" ";//* =============== Start of message =============== 
-int start_loc2= find_text("><",line,end_loc+1)+6;// ><  id price.1
+int start_loc2= find_text("{",line,end_loc+1)+6;// ><  id price.1
 
  //Serial.println(line);
 int end_loc2=find_text(",",line,end_loc+1);// </span
@@ -343,8 +351,9 @@ if (start_loc2>0 && end_loc2>0)
 {
   
 //  Serial.println("views:");
-for (int i=start_loc2+3;i<end_loc2;i++){
-//Serial.print(line[i]);
+for (int i=start_loc2-5;i<end_loc2+120;i++){// ==== this is the loop ============
+//
+Serial.print(line[i]);
 me+=message[i];//line
 }
 
