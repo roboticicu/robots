@@ -1,5 +1,3 @@
-
-
 /*
  * robotStreamId
  * 
@@ -20,6 +18,13 @@
  * arduinojson.org/v6/assistant/
  * 
  * 
+ * 
+========= Version settings ============
+esp8266       v2.6.3
+ArduinoJson   v6.x
+========= Version settings ============
+ * 
+ * 
  * This is the bot under test:
  * robotic.icu/robot.php?id=934661423
  * 
@@ -30,18 +35,16 @@
  */
 const char* host = "www.robotic.icu";
 const char* streamId = "xxxxxxxxx";
-const char* DeviceID = "240527013";// My Home
+const char* DeviceID = "849081125";// Space Command
 /* 
-849081125 477383611 
-934661423 240527013 907864801 168036030 184884263
+519994052 849081125 383085317 477383611 240527013 
+934661423 907864801 168036030 184884263
 876975430 992438994 866880631 611452822 286531102 
 112518130 368141751 368141751 770623542 749236437 
 513739377 471922699 233683192 417658552 
 */
 
 
-//const char* ssid     = "your-ssid";
-//const char* password = "your-password";
 #include <Logins.h>
 /* ====  store content below in: libraries/Logins/Logins.h
 char ssid[] = "xxxxxxxxxx";// your network SSID (name)
@@ -71,7 +74,7 @@ int i =0;
 
 
 int Bar = 0;
-int range = 18;
+float range = 15;
 
 int State = 1;
 //static int savedState = 1;
@@ -182,6 +185,26 @@ void loop() {
   delay(500);//100-1000
   ++value;
 
+/* ============= voltmeter input =================== */
+  // read the input on analog pin 0:
+  float sensorValue = analogRead(A0);
+
+  /* Convert the analog reading 
+     (which goes from 0 - 1023)
+     to a voltage (0 - 5V):
+   */
+
+ // float Level = (map(bat, 0, 1023, 0, 5000))/1;
+   float Level = sensorValue * (range / 1023.00);
+   //float Bar=(Level/range)*(display.width());
+   //float Percent=(Level/range)*100;
+   //float Level = (map(bat, 0, 1023, 0, 5000))/1;
+   float batLev=(Level/range)*100;
+    Serial.print("batLev:");
+    Serial.print(batLev);
+    Serial.print("   millis:");
+    Serial.println(millis());
+/* ============= voltmeter input =================== */
 
 
   //Serial.print("connecting to ");
@@ -200,8 +223,8 @@ void loop() {
   //url += streamId;
   url += "?id=";
   url += DeviceID;
-  //url += "&value=";
-  //url += value;
+  url += "&batLevel=";
+  url += batLev;
  
   //Serial.print("Requesting URL: ");
   //Serial.println(url);
@@ -593,4 +616,3 @@ void displayBatt(int P1, int P2, int P3, int P4, int P5, int P6, int P7, int bat
 //display.print(str(name) );
  // const char* OldButtons = Buttons;// LED_BUILTIN
   
-
