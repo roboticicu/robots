@@ -91,12 +91,12 @@ int State = 1;
 #include <Wire.h>
 int rotation=0; // display upright horizontal
   #include <Adafruit_SSD1306.h>
-//  #include <Adafruit_SSD1306_64.h>
+Adafruit_SSD1306 display = Adafruit_SSD1306(128, 64, &Wire);// 32 or 64 dot mode
 #include <Adafruit_GFX.h>
 
 // OLED display TWI address
 #define OLED_ADDR    0x3C
-Adafruit_SSD1306 display(-1);
+//Adafruit_SSD1306 display(-1);
 
 #if (SSD1306_LCDHEIGHT != 32)
 //#error("Height incorrect, please fix Adafruit_SSD1306.h!");
