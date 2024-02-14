@@ -1,5 +1,5 @@
 /*
- * JSONControlledPowerSupply0
+ * JSONControlledPowerSupply
  * 
  * Source: Bard
 
@@ -51,7 +51,7 @@ DynamicJsonDocument doc(capacity);
 
 
 // Create a PWM object
-PWM pwm1;
+PWM pwm1; // This line causes error. I think is related to not being in the servo.h libary
 
 // Define the safety voltage limit
 float safetyVoltageLimit = 60;
