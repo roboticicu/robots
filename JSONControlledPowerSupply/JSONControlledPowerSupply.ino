@@ -24,7 +24,7 @@ JSON
   const char* DeviceID = "304473756";// PowerSupply
   const char* wifiID = "JSONControlledPowerSupply";// no spaces
 /* ========== Device parameters ================================= */
- 
+
 int baud = 115200;//  115200 19200
 
 #include <Logins.h>
