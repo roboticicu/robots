@@ -19,10 +19,12 @@ JSON
   "safetyVoltageLimit": 60
 }
 
-Problem:
-Please help me make this code work on a esp32-S3 module
-
  */
+/* ==========Device parameters ================================= */
+  const char* DeviceID = "304473756";// PowerSupply
+  const char* wifiID = "JSONControlledPowerSupply";// no spaces
+/* ==========Device parameters ================================= */
+ 
 int baud = 115200;//  115200 19200
 
 #include <Logins.h>
@@ -35,6 +37,7 @@ char pass[] = "xxxxxxxxxx";// your network password
 #include <Arduino.h>
 #include <WiFi.h>
 #include <ArduinoJson.h>
+#include <ESP32Servo.h> // added
 
 // Define the ADC pin and PWM pin
 #define ADC_PIN 36
@@ -52,7 +55,9 @@ DynamicJsonDocument doc(capacity);
 
 
 // Create a PWM object
-PWM pwm1; // This line causes error. I think is related to not being in the servo.h libary
+//PWM pwm1;
+ESP32PWM pwm1;// added
+int freq = 1000;// added
 
 // Define the safety voltage limit
 float safetyVoltageLimit = 60;
@@ -64,6 +69,7 @@ void setup() {
   // Connect to WiFi
 //  WiFi.begin("YOUR_SSID", "YOUR_PASSWORD");
   WiFi.begin (ssid, pass);
+    WiFi.hostname(wifiID);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.println("Connecting to WiFi...");
@@ -75,9 +81,10 @@ void setup() {
   analogSetAttenuation(ADC_11db);
 
   // Initialize the PWM
-  pwm1.setPin(PWM_PIN);
-  pwm1.setFrequency(1000);
-  pwm1.setDutyCycle(0);
+//  pwm1.setPin(PWM_PIN);
+//  pwm1.setFrequency(1000);
+//  pwm1.setDutyCycle(0);
+ pwm1.attachPin(PWM_PIN, freq, 10); // 1KHz 8 bit
 }
 
 void loop() {
@@ -113,7 +120,8 @@ void loop() {
     float pwmDutyCycle = commandValue / 3.3 * 100;
 
     // Set the PWM duty cycle
-    pwm1.setDutyCycle(pwmDutyCycle);
+//    pwm1.setDutyCycle(pwmDutyCycle);
+    pwm1.adjustFrequency(pwmDutyCycle);
 
     // Print the command value and output voltage to the serial monitor
     Serial.println("Command value: " + String(commandValue));
