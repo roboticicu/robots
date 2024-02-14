@@ -3,13 +3,14 @@
  * 
  * Source: Bard
 
-can you give code for the esp32, where it gets a command value (in volts) from json. Then uses a ADC to measure the output of a variable power supply..
+can you give code for the esp32, where it gets a command value (in volts) from json. 
+Then uses a ADC to measure the output of a variable power supply..
 Then use a PWM signal to adjust the power supply until it's output matches the json value...
 
 Can you adjust the last example, 
 so the command value is in the range of 0 to 60 volts, 
 but also includes a second JSON command that limits the output range 
-to a setSafetyVoltageLimit?
+to set a SafetyVoltageLimit?
 
 
 JSON
