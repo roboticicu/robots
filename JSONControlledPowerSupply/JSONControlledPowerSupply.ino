@@ -19,7 +19,8 @@ JSON
   "safetyVoltageLimit": 60
 }
 
-
+Problem:
+Please help me make this code work on a esp32-S3 module
 
  */
 int baud = 115200;//  115200 19200
