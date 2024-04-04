@@ -43,7 +43,7 @@ String AppKey = "abcAppdefKeyghi";
 ==== */
 
 
-const char * msg = "Buy FaceBook";//message
+const char * msg = "Visit robotic.icu";//message
 //String zipCode = "19355";//Marcus hook
 //String zipCode = "19355";//Marcus hook
 //String zipCode = "19355";//Marcus hook
