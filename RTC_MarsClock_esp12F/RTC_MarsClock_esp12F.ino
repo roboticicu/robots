@@ -1,6 +1,23 @@
 /*
 RTC_MarsClock
 
+Mars Facts:
+Because Mars rotates on its axis just a little bit slower than 
+Earth does, though, a sol on Mars is 2.75 percent longer than 
+a day on Earth: 24 hours 39 minutes 35 seconds. 
+
+24*61*61=89304 sec
+88775.244
+(1 Mars second) = (1.02749125 Earth seconds)=88775.244/(24*3600)
+
+
+
+
+So expressed in Earth time, 
+on Mars each solar hour is 1 hour 1 minute 39 seconds 
+(1/24 of a sol) long, each solar minute is 61.65 seconds long, 
+and each solar second is 1.0275 seconds long.
+
 Me:
 Can you write me code for the esp32 that uses a DS3231 RTC 
 that compares the RTC time to the unix timestamp(1672012800) 
@@ -117,6 +134,7 @@ void loop() {
   Serial.print("Current Sol: ");
   Serial.println(currentSol % 668);
   Serial.print("Martian Time: ");
+  if(solHours<10){Serial.print("0");}
   Serial.print(solHours);
   Serial.print(":");
   if(solMinutes<10){Serial.print("0");}
@@ -125,5 +143,5 @@ void loop() {
   if(solSecondsRemaining<10){Serial.print("0");}
   Serial.println(solSecondsRemaining);
 
-  delay(5000); // Update every second
+  delay(1000); // Update every second
 }
